@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SKILLS_DIR="$PLUGIN_ROOT/skills"
+
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  SKILLS_DIR="$CURSOR_PLUGIN_ROOT/skills"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  SKILLS_DIR="$CLAUDE_PLUGIN_ROOT/skills"
+fi
+
+SKILL_FILE="$SKILLS_DIR/using-mobazha/SKILL.md"
+
+if [ -f "$SKILL_FILE" ]; then
+  cat "$SKILL_FILE"
+fi

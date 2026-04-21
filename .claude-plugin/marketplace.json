@@ -1,0 +1,20 @@
+{
+  "name": "mobazha-skills",
+  "description": "AI skills for Mobazha decentralized commerce: store deployment, product import, privacy tools",
+  "owner": {
+    "name": "Mobazha",
+    "url": "https://mobazha.org"
+  },
+  "plugins": [
+    {
+      "name": "mobazha-skills",
+      "description": "AI skills for Mobazha: store deployment, product import, privacy tools",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "Mobazha",
+        "url": "https://mobazha.org"
+      }
+    }
+  ]
+}

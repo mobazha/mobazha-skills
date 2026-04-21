@@ -1,0 +1,9 @@
+{
+  "id": "mobazha-skills",
+  "version": "0.1.0",
+  "description": "AI skills for Mobazha decentralized commerce: store deployment, product import, privacy tools",
+  "author": "Mobazha",
+  "homepage": "https://github.com/mobazha/mobazha-skills",
+  "license": "MIT",
+  "configSchema": {}
+}

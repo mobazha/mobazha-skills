@@ -1,0 +1,13 @@
+{
+  "hooks": [
+    {
+      "matcher": "session_start",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "./hooks/session-start"
+        }
+      ]
+    }
+  ]
+}
