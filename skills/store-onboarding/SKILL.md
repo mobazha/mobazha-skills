@@ -248,18 +248,24 @@ The password was already set. Use your existing credentials to obtain a Bearer t
 
 ### Forgot admin password (standalone / local)
 
+There is currently no `reset-password` CLI command. To reset the admin password, delete the auth database and restart the node — this will trigger the Setup Wizard again for password creation:
+
 For Docker standalone stores:
 
 ```bash
 cd /opt/mobazha
-docker compose exec mobazha mobazha reset-password
+docker compose exec mobazha rm -f /data/datastore/mainnet.db
+docker compose restart mobazha
 ```
 
 For native binary:
 
 ```bash
-mobazha reset-password
+rm -f ~/.mobazha/datastore/mainnet.db
+mobazha service stop && mobazha service start
 ```
+
+> **Warning**: This resets the admin password only. Store data (products, orders) is preserved, but you will need to re-set your admin password via the Setup Wizard.
 
 ### Wizard keeps showing after completing steps
 
@@ -267,6 +273,6 @@ Verify all required steps via `GET /v1/system/setup`. The `profile` step require
 
 ### Cannot access from another device on LAN
 
-- Ensure no firewall is blocking the web port (80 or custom)
+- Ensure no firewall is blocking the web port (80 for Docker, 5102 for native)
 - Use your machine's LAN IP, not `localhost` (check with `ip addr` or `ifconfig`)
-- The store must be running (`mobazha status` or `docker compose ps`)
+- The store must be running (`mobazha service status` or `docker compose ps`)

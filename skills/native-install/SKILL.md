@@ -17,7 +17,7 @@ Install Mobazha as a single native binary — no Docker, no runtime dependencies
 curl -sSL https://get.mobazha.org/install | bash
 ```
 
-This downloads the `mobazha` binary to `~/.local/bin/` (or to a directory on your PATH) and starts the store.
+This downloads the `mobazha` binary (and the `mobazha-launcher` for auto-update) to `~/.local/bin/` and starts the store as a background service.
 
 ### Windows
 
@@ -32,40 +32,40 @@ The Windows desktop app includes a system tray icon and auto-opens your browser 
 
 1. Detects your OS and architecture (linux/darwin, amd64/arm64)
 2. Downloads the matching binary from GitHub Releases
-3. Places it in `~/.local/bin/` (or custom `--dir`)
-4. On macOS: includes the desktop tray launcher (system tray icon)
-5. Starts the store automatically (unless `--no-start` is passed)
+3. Verifies the SHA-256 checksum
+4. Places binaries in `~/.local/bin/` (or custom `--dir`)
+5. Downloads the launcher binary (crash recovery + auto-update) if available
+6. Registers and starts as a background service (unless `--no-start` is passed)
+
+After install, the store is accessible at `http://localhost:5102` (or `http://<public-ip>:5102` for VPS).
 
 ## Running Your Store
 
-### Start with a domain (auto-TLS)
-
-```bash
-mobazha start --domain shop.example.com
-```
-
-### Start without a domain (localhost / LAN)
+### Foreground mode
 
 ```bash
 mobazha start
 ```
 
-The store will be accessible at `http://localhost` or `http://<LAN-IP>`. Buyers can still find you through the Mobazha network even without a public IP.
+The store API and Web UI are served on port **5102** by default: `http://localhost:5102`.
 
-### Install as a System Service
+### Background service (recommended)
 
-Linux (systemd) or macOS (launchd):
-
-```bash
-sudo mobazha setup-service install
-```
-
-This sets up the store to start automatically on boot. Manage with:
+The installer registers a service automatically. Manage it with:
 
 ```bash
-sudo systemctl status mobazha    # Linux
-sudo launchctl list | grep mobazha  # macOS
+mobazha service status     # Check if running
+mobazha service stop       # Stop the service
+mobazha service start      # Start the service
+mobazha service install    # Re-install / re-register the service
+mobazha service uninstall  # Remove the service
 ```
+
+On Linux this uses systemd (user-mode when possible), on macOS it uses launchd.
+
+### With a custom domain
+
+The native binary itself does not include a reverse proxy. To use a custom domain with HTTPS, deploy via the **standalone Docker** setup instead (see `standalone-setup` skill), or manually configure a reverse proxy (Caddy, Nginx) in front of port 5102.
 
 ## Install Options
 
@@ -73,7 +73,7 @@ sudo launchctl list | grep mobazha  # macOS
 |------|-------------|
 | `--version <tag>` | Install a specific version (e.g., `v0.3.0-beta.15`) |
 | `--dir <path>` | Custom install directory (default: `~/.local/bin`) |
-| `--no-start` | Download only, don't start the store |
+| `--no-start` | Download only, don't register or start the service |
 
 ## Backup
 
@@ -100,7 +100,7 @@ curl -sSL https://get.mobazha.org/install | bash -s -- --uninstall --purge
 ### macOS
 
 - Installs via `curl | bash`, which bypasses Gatekeeper (no Apple Developer signing required)
-- Includes a desktop tray app with system tray icon
+- The launcher registers as a launchd LaunchAgent for auto-start on login
 - Supports both Apple Silicon (arm64) and Intel (amd64)
 
 ### Linux ARM64
@@ -112,14 +112,14 @@ curl -sSL https://get.mobazha.org/install | bash -s -- --uninstall --purge
 
 - No port forwarding needed for basic operation
 - Your store stays reachable via the Mobazha P2P network
-- For a direct URL, use `--domain` with a public-facing server, or enable Tor overlay
+- For a direct public URL, use the **standalone Docker** setup with a domain, or enable Tor overlay
 
 ## After Installation
 
-1. Open `http://localhost/admin` (or `https://your-domain/admin`)
-2. Complete the **Setup Wizard** — set admin password, store name, region/currency (see `store-onboarding` skill for the full walkthrough)
+1. Open `http://localhost:5102/admin` (or `http://<your-ip>:5102/admin` for VPS)
+2. Complete the **Setup Wizard** — set admin password, store name, visibility, region/currency (see `store-onboarding` skill for the full walkthrough)
 3. Add products and start selling
-4. (Optional) Connect your AI agent to the store via MCP for hands-free management — see `store-mcp-connect` skill
+4. (Optional) Connect your AI agent to the store via MCP — see `store-mcp-connect` skill
 
 ## Troubleshooting
 
@@ -141,4 +141,14 @@ This shouldn't happen with `curl | bash` install. If running a downloaded binary
 
 ```bash
 xattr -d com.apple.quarantine ./mobazha
+```
+
+### Check service logs
+
+```bash
+# Linux
+journalctl --user -u mobazha -f
+
+# macOS
+tail -f ~/Library/Logs/Mobazha/mobazha.log
 ```
