@@ -34,12 +34,21 @@ The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/im
       "price": "29.99",
       "pricingCurrency": "USD",
       "description": "Product description",
+      "shortDescription": "Brief summary",
+      "productType": "Clothing",
       "tags": ["tag1", "tag2"],
       "condition": "NEW",
       "nsfw": false,
       "images": ["photo1.jpg", "photo2.jpg"],
-      "quantity": 100,
-      "shippingProfileId": "Standard Shipping"
+      "introVideo": "demo.mp4",
+      "processingTime": "1-3 business days",
+      "grams": 500,
+      "quantity": "100",
+      "shippingProfileId": "Standard Shipping",
+      "variants": [
+        { "selections": {"Color": "Red", "Size": "S"}, "price": "24.99", "quantity": "50", "productID": "SKU-RED-S" },
+        { "selections": {"Color": "Blue", "Size": "S"}, "price": "26.99", "quantity": "30", "productID": "SKU-BLU-S" }
+      ]
     }
   ],
   "shippingProfiles": [
@@ -58,9 +67,19 @@ The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/im
       ]
     }
   ],
+  "collections": [
+    {
+      "title": "Summer Collection",
+      "description": "Best summer products",
+      "image": "summer-banner.jpg",
+      "products": ["unique-product-slug"]
+    }
+  ],
   "profile": {
     "name": "Store Name",
-    "about": "Store description"
+    "about": "Store description",
+    "shortDescription": "Brief tagline",
+    "location": "New York, US"
   }
 }
 ```
@@ -72,7 +91,25 @@ The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/im
 | `PHYSICAL_GOOD` | Requires `shippingProfileId` matching a profile key/name |
 | `DIGITAL_GOOD` | No shipping needed |
 | `SERVICE` | No shipping needed |
-| `CRYPTOCURRENCY` | Token/coin listings |
+| `CRYPTOCURRENCY` | Token/coin listings (supports RWA fields) |
+
+### Variants
+
+Each variant uses a `selections` map (not separate name/options fields):
+
+```json
+{ "selections": {"Color": "Red", "Size": "M"}, "price": "24.99", "quantity": "50", "productID": "SKU-001" }
+```
+
+### Collections
+
+Group products into collections by referencing their slugs:
+
+```json
+{ "title": "New Arrivals", "products": ["product-slug-1", "product-slug-2"] }
+```
+
+For the complete field reference, see [`references/mapping.md`](references/mapping.md).
 
 ### Image Handling
 
