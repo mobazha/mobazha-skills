@@ -244,6 +244,17 @@ Parameters:
   profile_json: '{"name":"Updated Store Name", "shortDescription":"New tagline"}'   (required)
 ```
 
+## Settings
+
+### View Storefront Settings
+
+```
+Tool: settings_get_storefront
+Parameters: (none)
+```
+
+Returns storefront configuration including accepted currencies, shipping options, return policy, terms of service, and store appearance settings.
+
 ## Notifications
 
 ### Check Notifications
