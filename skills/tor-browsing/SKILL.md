@@ -1,3 +1,8 @@
+---
+name: tor-browsing
+description: Configure Tor Browser to access Mobazha stores privately, or run a store as a .onion hidden service. Use for privacy and anonymity setup.
+---
+
 # Tor Browsing & Privacy Configuration
 
 Access Mobazha stores anonymously through Tor, or run your own store as a .onion hidden service.

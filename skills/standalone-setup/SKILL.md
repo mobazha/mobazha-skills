@@ -1,3 +1,8 @@
+---
+name: standalone-setup
+description: Deploy a self-hosted Mobazha store on any Linux VPS using Docker. Use when the user wants to set up a standalone store on a server.
+---
+
 # Standalone Store Setup
 
 Deploy a fully independent Mobazha store on any Linux VPS with a single command. Docker-based with automatic updates.

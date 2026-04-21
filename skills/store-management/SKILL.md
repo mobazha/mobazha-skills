@@ -1,3 +1,8 @@
+---
+name: store-management
+description: Manage a Mobazha store using MCP tools — products, orders, messages, and settings. Requires an active MCP connection (see store-mcp-connect).
+---
+
 # Store Management via AI
 
 This skill teaches AI agents how to manage a Mobazha store using MCP tools. It requires a working MCP connection — see `store-mcp-connect` skill first.

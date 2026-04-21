@@ -1,3 +1,8 @@
+---
+name: store-mcp-connect
+description: Connect an AI agent to a Mobazha store via MCP (Model Context Protocol). Use when the user wants their agent to directly manage store products, orders, and settings.
+---
+
 # Connect AI Agent to Your Store (MCP)
 
 Connect your AI coding agent to your Mobazha store via MCP (Model Context Protocol). Once connected, your agent can directly manage products, orders, messages, and more.

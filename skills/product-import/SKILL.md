@@ -1,3 +1,8 @@
+---
+name: product-import
+description: Import products from Shopify, Amazon, Etsy, or CSV into a Mobazha store. Use when the user wants to migrate or copy listings from another platform.
+---
+
 # Product Import
 
 Import products from Shopify, Amazon, Etsy, and other e-commerce platforms into your Mobazha store.

@@ -1,3 +1,8 @@
+---
+name: store-onboarding
+description: Complete the first-time setup wizard for a new Mobazha store. Use after deployment to configure admin password, store name, currencies, and profile.
+---
+
 # Store Onboarding
 
 Complete the first-time setup of your Mobazha store after deployment. This skill covers the Setup Wizard and onboarding flow for all store modes.

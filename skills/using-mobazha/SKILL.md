@@ -1,3 +1,8 @@
+---
+name: using-mobazha
+description: Entry point for Mobazha skills. Provides an overview of available skills and guides the AI agent to load the right one based on user intent.
+---
+
 # Using Mobazha Skills
 
 You have access to **Mobazha Skills** — a set of guided workflows for the [Mobazha](https://mobazha.org) decentralized commerce platform.

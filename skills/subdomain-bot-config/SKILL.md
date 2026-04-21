@@ -1,3 +1,8 @@
+---
+name: subdomain-bot-config
+description: Set up a custom domain and Telegram Bot for a Mobazha store. Use when the user wants to configure DNS, TLS, or a Telegram Mini App storefront.
+---
+
 # Subdomain & Telegram Bot Configuration
 
 Set up a custom domain for your Mobazha store and connect a Telegram Bot for your storefront Mini App.

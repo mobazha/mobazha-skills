@@ -1,3 +1,8 @@
+---
+name: native-install
+description: Install the Mobazha native binary on Linux, macOS, or Windows. Use when the user wants to run a store without Docker.
+---
+
 # Native Binary Installation
 
 Install Mobazha as a single native binary — no Docker, no runtime dependencies. Works on Linux (x86_64 & ARM64), macOS (Apple Silicon & Intel), and Windows.
