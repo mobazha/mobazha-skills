@@ -11,7 +11,7 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 | **Admin URL** | `app.mobazha.org` (dashboard after login) | `https://shop.example.com/admin` or `http://<IP>/admin` | `http://localhost/admin` or `http://<LAN-IP>/admin` |
 | **Login method** | OAuth (Google, GitHub, or email) | Admin password (set during onboarding) | Admin password (set during onboarding) |
 | **Onboarding** | UI wizard after first login | Setup Wizard at `/admin` (4 steps, API-automatable) | Same as VPS |
-| **MCP connection** | SSE at `https://app.mobazha.org/platform/v1/mcp` | SSH tunnel + stdio (recommended) or SSE | stdio direct: `--gateway-url http://localhost:8100` |
+| **MCP connection** | SSE at `https://app.mobazha.org/platform/v1/mcp/sse` | SSE at `https://shop.example.com/platform/v1/mcp/sse` (or SSH tunnel) | SSE at `http://localhost:5102/platform/v1/mcp/sse` |
 | **MCP auth** | API Token (from Admin > Settings > API) | Bearer Token (from `/platform/v1/auth/tokens`) | Bearer Token (same as VPS) |
 | **Public access** | Always public via `app.mobazha.org` | Public via domain or IP | LAN only (unless Tor overlay or P2P enabled) |
 | **Setup skill** | N/A (sign up online) | `standalone-setup` | `native-install` |
@@ -46,5 +46,5 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 | Service | SaaS | VPS Standalone | NAT / Local (native) |
 |---------|------|---------------|---------------------|
 | Web UI | 443 (HTTPS) | 80/443 (Caddy proxy) | 80 (or custom) |
-| Gateway API | managed | same as web (proxied) | 8100 |
+| Gateway API | managed | same as web (proxied) | 5102 |
 | LibP2P | managed | 4001 | 4001 |

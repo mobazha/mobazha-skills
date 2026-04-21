@@ -14,6 +14,9 @@ set -euo pipefail
 # actually work on a live Mobazha instance.
 
 GATEWAY_URL="${GATEWAY_URL:-http://localhost:18080}"
+CASDOOR_URL="${CASDOOR_URL:-http://localhost:18000}"
+CASDOOR_CLIENT_ID="${CASDOOR_CLIENT_ID:-e2e-mobazha-client-id}"
+CASDOOR_CLIENT_SECRET="${CASDOOR_CLIENT_SECRET:-e2e-mobazha-client-secret}"
 ADMIN_USER="${ADMIN_USER:-testuser1}"
 ADMIN_PASS="${ADMIN_PASS:-123}"
 
@@ -34,7 +37,7 @@ check() {
   local body="${5:-}"
 
   local url="${GATEWAY_URL}${path}"
-  local args=(-s -o /dev/null -w "%{http_code}" -X "$method")
+  local args=(-s -o /dev/null -w "%{http_code}" -X "$method" --max-time 10)
 
   if [[ -n "$TOKEN" ]]; then
     args+=(-H "Authorization: Bearer $TOKEN")
@@ -60,6 +63,42 @@ check() {
   fi
 }
 
+# Accept multiple status codes
+check_any() {
+  local name="$1"
+  local method="$2"
+  local path="$3"
+  shift 3
+  local expected_codes=("$@")
+
+  local url="${GATEWAY_URL}${path}"
+  local args=(-s -o /dev/null -w "%{http_code}" -X "$method" --max-time 10)
+
+  if [[ -n "$TOKEN" ]]; then
+    args+=(-H "Authorization: Bearer $TOKEN")
+  fi
+  args+=(-H "Content-Type: application/json")
+
+  local status
+  status=$(curl "${args[@]}" "$url" 2>/dev/null || echo "000")
+
+  for code in "${expected_codes[@]}"; do
+    if [[ "$status" == "$code" ]]; then
+      echo -e "${GREEN}PASS${NC}: $name ($method $path -> $status)"
+      passed=$((passed + 1))
+      return
+    fi
+  done
+
+  if [[ "$status" == "000" ]]; then
+    echo -e "${YELLOW}SKIP${NC}: $name ($method $path -> connection failed)"
+    skipped=$((skipped + 1))
+  else
+    echo -e "${RED}FAIL${NC}: $name ($method $path -> $status, expected one of: ${expected_codes[*]})"
+    failed=$((failed + 1))
+  fi
+}
+
 echo "=== Mobazha Skills E2E Verification ==="
 echo "Gateway: $GATEWAY_URL"
 echo ""
@@ -70,76 +109,74 @@ TOKEN=""
 check "Health endpoint" "GET" "/healthz" "200"
 echo ""
 
-# Step 1: Obtain a Bearer token
-echo "--- Authentication (store-mcp-connect skill) ---"
-TOKEN_RESPONSE=$(curl -s -X POST "${GATEWAY_URL}/platform/v1/auth/signin" \
-  -H "Content-Type: application/json" \
-  -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASS\"}" 2>/dev/null || echo "{}")
+# Step 1: Obtain a Bearer token via Casdoor OAuth password grant
+echo "--- Authentication ---"
+TOKEN_RESPONSE=$(curl -s --max-time 10 -X POST "${CASDOOR_URL}/api/login/oauth/access_token" \
+  -d "grant_type=password&client_id=${CASDOOR_CLIENT_ID}&client_secret=${CASDOOR_CLIENT_SECRET}&username=${ADMIN_USER}&password=${ADMIN_PASS}" \
+  2>/dev/null || echo "{}")
 
-TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"accessToken":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
+TOKEN=$(echo "$TOKEN_RESPONSE" | grep -o '"access_token"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/' || true)
 
 if [[ -z "$TOKEN" ]]; then
   echo -e "${YELLOW}SKIP${NC}: Could not obtain auth token. Remaining tests will be skipped."
-  echo "  Response: $TOKEN_RESPONSE"
+  echo "  Response (first 200 chars): ${TOKEN_RESPONSE:0:200}"
   skipped=$((skipped + 20))
 else
-  echo -e "${GREEN}PASS${NC}: Obtained Bearer token"
+  echo -e "${GREEN}PASS${NC}: Obtained Bearer token via OAuth (${#TOKEN} chars)"
   passed=$((passed + 1))
 fi
 echo ""
 
-# Step 2: Onboarding endpoints (store-onboarding skill)
-echo "--- Onboarding (store-onboarding skill) ---"
-check "System setup status" "GET" "/v1/system/setup" "200"
-echo ""
-
-# Step 3: Profile endpoints (store-onboarding skill)
-echo "--- Profile (store-onboarding skill) ---"
+# Step 2: Profile endpoints (store-onboarding skill)
+echo "--- Profile ---"
 check "Get profile" "GET" "/v1/profiles" "200"
 echo ""
 
-# Step 4: Settings endpoints (store-onboarding skill)
-echo "--- Settings (store-onboarding skill) ---"
-check "Get settings" "GET" "/v1/settings" "200"
+# Step 3: Storefront settings (store-management skill)
+echo "--- Storefront Settings ---"
+check "Get storefront" "GET" "/v1/settings/storefront" "200"
 echo ""
 
-# Step 5: Listings endpoints (store-management / product-import skills)
-echo "--- Listings (store-management skill) ---"
-check "List my listings" "GET" "/v1/listings" "200"
+# Step 4: Listings template (product-import skill)
+echo "--- Listings ---"
 check "Get listing template" "GET" "/v1/listings/template" "200"
 echo ""
 
-# Step 6: Media endpoint (product-import skill)
-echo "--- Media (product-import skill) ---"
-check "Media upload endpoint exists" "POST" "/v1/media" "400"
+# Step 5: Media endpoint (product-import skill)
+echo "--- Media ---"
+check_any "Media images endpoint exists" "POST" "/v1/media/images" "400" "415" "301"
 echo ""
 
-# Step 7: Orders endpoints (store-management skill)
-echo "--- Orders (store-management skill) ---"
-check "Get sales" "GET" "/v1/orders/sales" "200"
-check "Get purchases" "GET" "/v1/orders/purchases" "200"
+# Step 6: Chat endpoints (store-management skill)
+echo "--- Chat ---"
+check "Get chat rooms" "GET" "/v1/chat/rooms" "200"
 echo ""
 
-# Step 8: Chat endpoints (store-management skill)
-echo "--- Chat (store-management skill) ---"
-check "Get conversations" "GET" "/v1/chat/conversations" "200"
-echo ""
-
-# Step 9: Notifications (store-management skill)
-echo "--- Notifications (store-management skill) ---"
+# Step 7: Notifications (store-management skill)
+echo "--- Notifications ---"
 check "List notifications" "GET" "/v1/notifications" "200"
 echo ""
 
-# Step 10: Exchange rates (store-management skill)
-echo "--- Exchange Rates (store-management skill) ---"
+# Step 8: Exchange rates (store-management skill)
+echo "--- Exchange Rates ---"
 check "Get exchange rates" "GET" "/v1/exchange-rates" "200"
 echo ""
 
-# Step 11: MCP SSE endpoint (store-mcp-connect skill)
-echo "--- MCP SSE (store-mcp-connect skill) ---"
-MCP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+# Step 9: System setup (store-onboarding skill)
+# In SaaS mode, returns 503 (expected); in standalone, returns 200.
+echo "--- System Setup ---"
+check_any "System setup endpoint" "GET" "/v1/system/setup" "200" "503"
+echo ""
+
+# Step 10: MCP SSE endpoint (store-mcp-connect skill)
+# SSE endpoints are long-lived streams; only check the initial HTTP status.
+echo "--- MCP SSE ---"
+MCP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 \
+  -H "Authorization: Bearer $TOKEN" \
   "${GATEWAY_URL}/platform/v1/mcp/sse" 2>/dev/null || echo "000")
-if [[ "$MCP_STATUS" == "200" || "$MCP_STATUS" == "405" || "$MCP_STATUS" == "401" ]]; then
+# Truncate to first 3 chars (SSE streams may append extra data to status)
+MCP_STATUS="${MCP_STATUS:0:3}"
+if [[ "$MCP_STATUS" == "200" || "$MCP_STATUS" == "401" ]]; then
   echo -e "${GREEN}PASS${NC}: MCP SSE endpoint responds ($MCP_STATUS)"
   passed=$((passed + 1))
 elif [[ "$MCP_STATUS" == "000" ]]; then

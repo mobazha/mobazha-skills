@@ -24,7 +24,7 @@
         "command": "mobazha-mcp",
         "args": ["--gateway-url", "${MOBAZHA_GATEWAY_URL}", "--token", "${MOBAZHA_TOKEN}"],
         "env": {
-          "MOBAZHA_GATEWAY_URL": "http://localhost:8100",
+          "MOBAZHA_GATEWAY_URL": "http://localhost:5102",
           "MOBAZHA_TOKEN": ""
         }
       }

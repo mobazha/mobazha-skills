@@ -54,7 +54,7 @@ This lets you test standalone-mode skills, onboarding, and MCP connections.
 
 - [ ] Build or install `mobazha-mcp`
 - [ ] Obtain a Bearer token via `POST /platform/v1/auth/tokens`
-- [ ] **Local stdio**: `mobazha-mcp --gateway-url http://localhost:8100 --token <token>` connects successfully
+- [ ] **Local SSE**: SSE at `http://localhost:5102/platform/v1/mcp/sse` connects successfully
 - [ ] **SSH tunnel**: Tunnel to a remote VPS, then connect via stdio
 - [ ] **SSE**: Connect to `https://<domain>/platform/v1/mcp` with Bearer header
 - [ ] Agent can call `listings_list_mine` and get a response

@@ -196,7 +196,7 @@ For stores running on your local machine (native binary or Docker without a publ
 
 If using the native binary with a custom gateway port:
 
-- **Gateway API**: `http://localhost:8100` (default for native)
+- **Gateway API**: `http://localhost:5102` (default for native)
 - **Web UI**: `http://localhost` (default port 80)
 
 ### Onboarding Steps
@@ -205,7 +205,7 @@ The Setup Wizard is identical to VPS Standalone mode (Steps 1-4 above). The only
 
 - **No domain needed** — You access via `localhost` or LAN IP
 - **No HTTPS** — Local connections use HTTP (this is fine for LAN)
-- **MCP connects directly** — No SSH tunnel needed: `mobazha-mcp --gateway-url http://localhost:8100`
+- **MCP connects directly** — No SSH tunnel needed; use SSE at `http://localhost:5102/platform/v1/mcp/sse`
 
 ### Limitations
 

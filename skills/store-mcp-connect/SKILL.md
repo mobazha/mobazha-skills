@@ -33,7 +33,8 @@ All Mobazha deployments include a built-in MCP SSE endpoint. This is the recomme
 | **SaaS** | `https://app.mobazha.org/platform/v1/mcp/sse` |
 | **Standalone (custom domain)** | `https://shop.example.com/platform/v1/mcp/sse` |
 | **Standalone (local Docker)** | `http://localhost/platform/v1/mcp/sse` |
-| **Native install** | `http://localhost:8100/platform/v1/mcp/sse` |
+| **Native install (local)** | `http://localhost:5102/platform/v1/mcp/sse` |
+| **Native install (VPS)** | `http://<vps-ip>:5102/platform/v1/mcp/sse` |
 
 ---
 
@@ -46,18 +47,31 @@ All Mobazha deployments include a built-in MCP SSE endpoint. This is the recomme
 3. Click **Generate Token**
 4. Copy the token
 
-### Standalone or Native Store
+### Standalone Store (Docker with domain)
+
+Open your store's admin panel in a browser and generate a token via **Settings > API**, or via curl:
 
 ```bash
-curl -X POST http://localhost:8100/platform/v1/auth/tokens \
+curl -X POST https://shop.example.com/platform/v1/auth/tokens \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "<your-admin-password>"}'
 ```
 
-For remote VPS, replace `localhost:8100` with your store's domain or use an SSH tunnel:
+### Native Install (local or VPS)
+
+The default gateway port for native installs is **5102**:
 
 ```bash
-ssh -L 8100:localhost:8100 root@<vps-ip>
+curl -X POST http://localhost:5102/platform/v1/auth/tokens \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "<your-admin-password>"}'
+```
+
+For a VPS, replace `localhost` with your server's IP or use an SSH tunnel:
+
+```bash
+ssh -L 5102:localhost:5102 root@<vps-ip>
+# Then use http://localhost:5102 from your local machine
 ```
 
 ---
@@ -158,14 +172,14 @@ For environments where SSE is not supported by the AI agent, or for air-gapped s
 The binary is bundled in the container:
 
 ```bash
-docker exec -it <container> mobazha-mcp --gateway-url http://localhost:8100 --token <token>
+docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --token <token>
 ```
 
 ### stdio CLI Reference
 
 | Flag | Env Variable | Default | Description |
 |------|-------------|---------|-------------|
-| `--gateway-url` | `MOBAZHA_GATEWAY_URL` | `http://localhost:8100` | Store gateway URL |
+| `--gateway-url` | `MOBAZHA_GATEWAY_URL` | `http://localhost:5102` | Store gateway URL |
 | `--token` | `MOBAZHA_TOKEN` | (required) | Bearer token |
 | `--search-url` | `MOBAZHA_SEARCH_URL` | (optional) | Marketplace search API URL |
 
@@ -176,7 +190,7 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:8100 --to
   "mcpServers": {
     "mobazha-store": {
       "command": "mobazha-mcp",
-      "args": ["--gateway-url", "http://localhost:8100"],
+      "args": ["--gateway-url", "http://localhost:5102"],
       "env": {
         "MOBAZHA_TOKEN": "<your-token>"
       }
@@ -191,13 +205,13 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:8100 --to
 
 ### "connection refused" or timeout
 
-- Verify the store is running: `curl http://localhost:8100/healthz`
+- Native install: verify the store is running with `curl http://localhost:5102/healthz`
+- Standalone Docker: the SSE endpoint is at port 80/443 (not 5102), try `curl http://localhost/healthz`
 - For remote stores, check that the domain resolves and HTTPS is configured
-- Docker standalone: the SSE endpoint is at port 80/443 (not 8100)
 
 ### "401 Unauthorized"
 
-- Verify the token: `curl -H "Authorization: Bearer <token>" http://localhost:8100/v1/profiles`
+- Verify the token: `curl -H "Authorization: Bearer <token>" http://localhost:5102/v1/profiles`
 - Token may have expired — generate a new one
 - Ensure the token has the required scopes for the tools you want to use
 

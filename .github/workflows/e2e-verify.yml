@@ -44,3 +44,12 @@ jobs:
 
       - name: Run API path verification
         run: ./scripts/verify-api-paths.sh
+
+      - name: Install Python dependencies
+        run: pip3 install requests sseclient-py
+
+      - name: Run MCP tool verification
+        run: python3 scripts/verify-mcp-tools.py
+        env:
+          GATEWAY_URL: ${{ env.GATEWAY_URL }}
+          CASDOOR_URL: ${{ vars.CASDOOR_URL || 'http://localhost:18000' }}
