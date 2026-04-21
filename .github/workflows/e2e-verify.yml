@@ -1,0 +1,46 @@
+name: E2E Verification
+
+on:
+  # Run weekly on Monday at 08:00 UTC
+  schedule:
+    - cron: "0 8 * * 1"
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      gateway_url:
+        description: "Mobazha Gateway URL to test against"
+        required: false
+        default: "http://localhost:18080"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-endpoints:
+    name: Verify Skill Endpoints
+    runs-on: self-hosted
+    timeout-minutes: 10
+    env:
+      GATEWAY_URL: ${{ github.event.inputs.gateway_url || 'http://localhost:18080' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for gateway to be ready
+        run: |
+          echo "Testing gateway at $GATEWAY_URL"
+          for i in $(seq 1 30); do
+            if curl -sf "$GATEWAY_URL/healthz" > /dev/null 2>&1; then
+              echo "Gateway is ready"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Gateway not ready after 30 attempts. Running verification anyway (will show skips)."
+            fi
+            sleep 2
+          done
+
+      - name: Run E2E verification
+        run: ./scripts/verify-e2e.sh
+
+      - name: Run API path verification
+        run: ./scripts/verify-api-paths.sh

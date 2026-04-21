@@ -10,7 +10,7 @@ Mobazha is a decentralized e-commerce platform for independent sellers. Key feat
 - **Self-hosted or SaaS** — deploy on your own server or use the hosted platform
 - **Built-in escrow** — trustless buyer protection on every crypto transaction
 - **Crypto + fiat payments** — Bitcoin, Litecoin, Zcash, TRON, plus Stripe and PayPal
-- **Encrypted chat** — end-to-end encrypted buyer-seller messaging
+- **Encrypted chat** — Matrix-based end-to-end encrypted buyer-seller messaging
 - **Telegram Mini App** — sell directly inside Telegram
 
 ## Available Skills

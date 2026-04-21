@@ -82,3 +82,12 @@ jobs:
             exit 1
           fi
           echo "All skills are indexed"
+
+  api-paths:
+    name: API Path Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify API paths against OpenAPI spec
+        run: ./scripts/verify-api-paths.sh
