@@ -89,6 +89,7 @@ In your store admin panel:
 3. Save
 
 This enables:
+
 - Order notifications in Telegram
 - Buyer can message you through the bot
 - Mini App storefront accessible via the bot's menu button
@@ -115,6 +116,7 @@ Share this link anywhere — buyers tap the menu button to open your Mini App st
 ## Credential Handling
 
 If the user shares a BotFather token:
+
 - Use it only for the immediate configuration task
 - Never store, log, or display it after use
 - Remind the user to keep the token private

@@ -131,10 +131,10 @@ See [TESTING.md](TESTING.md) for how to verify skills against a real store.
 
 [Mobazha](https://mobazha.org) is a decentralized commerce platform for independent sellers. Zero commissions, built-in escrow protection, crypto + fiat payments, and full data sovereignty.
 
-- **Website**: https://mobazha.org
-- **Self-Host Guide**: https://mobazha.org/self-host
-- **Telegram**: https://t.me/MobazhaHQ
-- **GitHub**: https://github.com/mobazha
+- **Website**: <https://mobazha.org>
+- **Self-Host Guide**: <https://mobazha.org/self-host>
+- **Telegram**: <https://t.me/MobazhaHQ>
+- **GitHub**: <https://github.com/mobazha>
 
 ## License
 

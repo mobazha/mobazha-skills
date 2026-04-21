@@ -33,11 +33,15 @@ jobs:
         with:
           args: >-
             --no-progress
-            --exclude-mail
+            --exclude 'mailto:'
             --exclude 'https://app.mobazha.org'
             --exclude 'https://shop.example.com'
             --exclude 'http://localhost'
             --exclude 'http://192.168'
+            --exclude 'https://your-store'
+            --exclude 'https://YOUR_GATEWAY'
+            --exclude 'https://img'
+            --exclude 'amazon.com/dp/B0'
             --exclude '<'
             "**/*.md"
           fail: true

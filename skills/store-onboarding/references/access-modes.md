@@ -27,6 +27,7 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 
 - **SaaS**: Generate an API token from the admin dashboard (Settings > API).
 - **VPS / NAT**: Obtain a Bearer token via the auth endpoint:
+
   ```
   POST /platform/v1/auth/tokens
   ```

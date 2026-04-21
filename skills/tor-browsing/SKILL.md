@@ -6,7 +6,7 @@ Access Mobazha stores anonymously through Tor, or run your own store as a .onion
 
 ### Step 1: Install Tor Browser
 
-Download from the official Tor Project website: https://www.torproject.org/download/
+Download from the official Tor Project website: <https://www.torproject.org/download/>
 
 | Platform | Install Method |
 |----------|---------------|
@@ -76,12 +76,14 @@ docker compose -f docker-compose.yml -f docker-compose.overlay.yml --profile tor
 ### Finding Your .onion Address
 
 After enabling Tor, your store's `.onion` address is shown in:
+
 - **Admin → System → Network** in the dashboard
 - The container logs: `docker compose logs | grep "onion"`
 
 ### How It Works
 
 When Tor overlay is enabled:
+
 - Your store runs a Tor hidden service inside the Docker container
 - A `.onion` address is generated (no domain purchase needed)
 - Buyers can access your store anonymously via Tor Browser

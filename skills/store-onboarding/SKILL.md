@@ -61,6 +61,7 @@ GET /v1/system/setup
 ```
 
 Response:
+
 ```json
 {
   "setupComplete": false,
@@ -194,6 +195,7 @@ For stores running on your local machine (native binary or Docker without a publ
 - **Other devices on LAN**: `http://<your-local-ip>/admin` (e.g., `http://192.168.1.100/admin`)
 
 If using the native binary with a custom gateway port:
+
 - **Gateway API**: `http://localhost:8100` (default for native)
 - **Web UI**: `http://localhost` (default port 80)
 
@@ -218,24 +220,30 @@ The Setup Wizard is identical to VPS Standalone mode (Steps 1-4 above). The only
 ## Troubleshooting
 
 ### "Setup already complete" error on POST /v1/system/setup
+
 The password was already set. Use your existing credentials to obtain a Bearer token and proceed with profile and settings.
 
 ### Forgot admin password (standalone / local)
+
 For Docker standalone stores:
+
 ```bash
 cd /opt/mobazha
 docker compose exec mobazha mobazha reset-password
 ```
 
 For native binary:
+
 ```bash
 mobazha reset-password
 ```
 
 ### Wizard keeps showing after completing steps
+
 Verify all required steps via `GET /v1/system/setup`. The `profile` step requires a non-empty store `name`. Check that the profile was saved successfully.
 
 ### Cannot access from another device on LAN
+
 - Ensure no firewall is blocking the web port (80 or custom)
 - Use your machine's LAN IP, not `localhost` (check with `ip addr` or `ifconfig`)
 - The store must be running (`mobazha status` or `docker compose ps`)

@@ -47,6 +47,7 @@ skills/
 ## Quality Checks
 
 Before committing, verify:
+
 - [ ] No internal service names, provider names, or infrastructure details
 - [ ] API paths start with `/v1/` or `/platform/v1/`
 - [ ] Auth uses Bearer Token (not Basic Auth)

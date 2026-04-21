@@ -2,7 +2,7 @@
 
 Install Mobazha as a single native binary — no Docker, no runtime dependencies. Works on Linux (x86_64 & ARM64), macOS (Apple Silicon & Intel), and Windows.
 
-**Official guide**: https://mobazha.org/self-host (Native Binary tab) and https://mobazha.org/download
+**Official guide**: <https://mobazha.org/self-host> (Native Binary tab) and <https://mobazha.org/download>
 
 ## Quick Install
 
@@ -16,7 +16,7 @@ This downloads the `mobazha` binary to `~/.local/bin/` (or to a directory on you
 
 ### Windows
 
-1. Go to https://mobazha.org/download
+1. Go to <https://mobazha.org/download>
 2. Download the `.zip` file for Windows
 3. Extract the archive
 4. Double-click `mobazha-tray.exe` to start
@@ -93,15 +93,18 @@ curl -sSL https://get.mobazha.org/install | bash -s -- --uninstall --purge
 ## Platform Notes
 
 ### macOS
+
 - Installs via `curl | bash`, which bypasses Gatekeeper (no Apple Developer signing required)
 - Includes a desktop tray app with system tray icon
 - Supports both Apple Silicon (arm64) and Intel (amd64)
 
 ### Linux ARM64
+
 - Works on Raspberry Pi 4+ and ARM VPS instances
 - Same install command — the script auto-detects architecture
 
 ### Running Behind NAT
+
 - No port forwarding needed for basic operation
 - Your store stays reachable via the Mobazha P2P network
 - For a direct URL, use `--domain` with a public-facing server, or enable Tor overlay
@@ -116,16 +119,21 @@ curl -sSL https://get.mobazha.org/install | bash -s -- --uninstall --purge
 ## Troubleshooting
 
 ### Binary not found after install
+
 Ensure `~/.local/bin` is in your PATH:
+
 ```bash
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 ### Permission denied
+
 The installer needs write access to the install directory. Use `--dir` to specify a writable location, or run with appropriate permissions.
 
 ### macOS "unverified developer" warning
+
 This shouldn't happen with `curl | bash` install. If running a downloaded binary directly, use:
+
 ```bash
 xattr -d com.apple.quarantine ./mobazha
 ```

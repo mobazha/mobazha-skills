@@ -49,11 +49,11 @@ When the user asks about any of these topics, read the corresponding SKILL.md fi
 
 ## Key Links
 
-- **Self-Host Guide**: https://mobazha.org/self-host
-- **Download Page**: https://mobazha.org/download
-- **SaaS Platform**: https://app.mobazha.org
-- **Telegram Group**: https://t.me/MobazhaHQ
-- **GitHub**: https://github.com/mobazha
+- **Self-Host Guide**: <https://mobazha.org/self-host>
+- **Download Page**: <https://mobazha.org/download>
+- **SaaS Platform**: <https://app.mobazha.org>
+- **Telegram Group**: <https://t.me/MobazhaHQ>
+- **GitHub**: <https://github.com/mobazha>
 
 ## MCP Integration
 

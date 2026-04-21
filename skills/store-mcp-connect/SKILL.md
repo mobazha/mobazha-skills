@@ -216,20 +216,24 @@ For a guide on what you can do with MCP tools, see the `store-management` skill.
 ## Troubleshooting
 
 ### "connection refused" or "dial tcp" errors
+
 - Verify the store is running: `curl http://localhost:8100/healthz`
 - For remote stores, ensure the SSH tunnel is active
 - Check that the gateway port matches (8100 is the default for native; Docker standalone proxies through port 80/443)
 
 ### "401 Unauthorized"
+
 - Verify the token: `curl -H "Authorization: Bearer <token>" http://localhost:8100/v1/profiles`
 - Token may have expired — generate a new one via `/platform/v1/auth/tokens`
 - For SaaS: ensure the API token is still valid in Settings > API
 
 ### "tool not found"
+
 - `search_listings` and `search_profiles` only appear when `--search-url` is configured
 - Some tools require specific scopes on the API token
 
 ### Credential Safety
+
 - Store the token in environment variables (`MOBAZHA_TOKEN`), not in config files committed to git
 - Add MCP config files to `.gitignore` if they contain tokens
 - Tokens can be revoked and regenerated at any time

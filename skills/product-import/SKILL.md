@@ -72,6 +72,7 @@ Cookie: <session-cookie>
 ### Step 1: Identify Products
 
 Collect Amazon product URLs or ASINs to import. Example:
+
 ```
 https://www.amazon.com/dp/B0XXXXXXXXX
 ```
@@ -79,6 +80,7 @@ https://www.amazon.com/dp/B0XXXXXXXXX
 ### Step 2: Extract Product Data
 
 For each product URL, extract:
+
 - **Title**: product name
 - **Description**: bullet points + product description
 - **Price**: current selling price
@@ -144,6 +146,7 @@ Then iterate rows and create listings via the Admin API.
 ### Authentication
 
 Mobazha stores use session-based authentication. The user should provide:
+
 - The store URL (e.g., `https://shop.example.com`)
 - Admin username and password
 
@@ -168,6 +171,7 @@ See also: `references/shopify-csv-mapping.md` for detailed field mapping from Sh
 ### Rate Considerations
 
 When importing many products:
+
 - Process one at a time to avoid overwhelming the store
 - Wait for each listing creation to succeed before starting the next
 - Upload images first, then reference them in the listing

@@ -2,7 +2,7 @@
 
 Deploy a fully independent Mobazha store on any Linux VPS with a single command. Docker-based with automatic updates.
 
-**Official guide**: https://mobazha.org/self-host
+**Official guide**: <https://mobazha.org/self-host>
 
 ## Prerequisites
 
@@ -146,22 +146,29 @@ docker compose up -d
 ## Troubleshooting
 
 ### Port 80/443 already in use
+
 Stop existing web servers (Apache, Nginx) before installing:
+
 ```bash
 systemctl stop nginx apache2 2>/dev/null; true
 ```
 
 ### Firewall blocking ports
+
 Allow HTTP/HTTPS traffic:
+
 ```bash
 ufw allow 80/tcp && ufw allow 443/tcp
 ```
+
 Or with firewalld:
+
 ```bash
 firewall-cmd --permanent --add-service=http --add-service=https && firewall-cmd --reload
 ```
 
 ### Check container logs
+
 ```bash
 cd /opt/mobazha && docker compose logs -f
 ```
