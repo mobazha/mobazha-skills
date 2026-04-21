@@ -10,7 +10,7 @@ Mobazha is a decentralized e-commerce platform for independent sellers. Key feat
 - **Self-hosted or SaaS** — deploy on your own server or use the hosted platform
 - **Built-in escrow** — trustless buyer protection on every crypto transaction
 - **Crypto + fiat payments** — Bitcoin, Litecoin, Zcash, TRON, plus Stripe and PayPal
-- **Encrypted chat** — Matrix-based end-to-end encrypted buyer-seller messaging
+- **Encrypted chat** — end-to-end encrypted buyer-seller messaging
 - **Telegram Mini App** — sell directly inside Telegram
 
 ## Available Skills
@@ -59,9 +59,21 @@ When the user asks about any of these topics, read the corresponding SKILL.md fi
 
 For the most powerful experience, connect your AI agent to the store via **MCP (Model Context Protocol)**. This gives the agent direct access to 30+ store management tools — products, orders, chat, discounts, and more. See `store-mcp-connect` for setup instructions.
 
+## Store Modes
+
+Mobazha supports three deployment modes. Skills that involve access URLs, authentication, or MCP connections cover all three:
+
+| Mode | Description | Setup Skill |
+|------|-------------|-------------|
+| **SaaS** | Hosted at `app.mobazha.org`, sign in with Google/GitHub/email | N/A (sign up online) |
+| **VPS Standalone** | Self-hosted with Docker on a VPS | `standalone-setup` |
+| **NAT / Local** | Native binary on your own machine | `native-install` |
+
+For a full comparison, see `skills/store-onboarding/references/access-modes.md`.
+
 ## Important Notes
 
 - Mobazha uses **external wallets** for crypto payments (buyers and sellers connect their own wallets). There is no internal wallet requiring deposit or withdrawal.
 - The SaaS platform at `app.mobazha.org` is the hosted version. Self-hosted stores are fully independent.
 - All install scripts are served from `get.mobazha.org` (which redirects to static assets on `mobazha.org`).
-- After deploying a store, the seller must visit `/admin` to complete the Setup Wizard before the store is operational.
+- After deploying a store, the seller must complete the Setup Wizard before the store is operational — see `store-onboarding`.

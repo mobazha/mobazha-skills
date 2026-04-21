@@ -1,5 +1,7 @@
 # Mobazha Skills
 
+[![Quality Check](https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml/badge.svg)](https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml)
+
 AI-powered skills for [Mobazha](https://mobazha.org) — the decentralized commerce platform. Deploy stores, complete onboarding, import products, and manage your business through AI agents with built-in MCP integration.
 
 ## What's Inside
@@ -10,7 +12,7 @@ AI-powered skills for [Mobazha](https://mobazha.org) — the decentralized comme
 |-------|-------------|
 | **standalone-setup** | Deploy a self-hosted Mobazha store on any VPS with Docker |
 | **native-install** | Install the native binary on Linux, macOS, or Windows |
-| **store-onboarding** | First-time `/admin` setup: admin password, store profile, region/currency |
+| **store-onboarding** | First-time setup: admin password, store profile, region/currency |
 
 ### Configure and Connect
 
@@ -27,9 +29,19 @@ AI-powered skills for [Mobazha](https://mobazha.org) — the decentralized comme
 | **store-management** | Manage products, orders, chat, discounts via 30+ MCP tools |
 | **product-import** | Import products from Shopify, Amazon, or Etsy into your store |
 
+## Store Modes
+
+Skills cover three deployment modes:
+
+| Mode | Best For | Getting Started |
+|------|----------|----------------|
+| **SaaS** | Quick start, no server | Sign up at `app.mobazha.org` |
+| **VPS Standalone** | Full control, custom domain | Follow `standalone-setup` skill |
+| **NAT / Local** | Personal use, development | Follow `native-install` skill |
+
 ## MCP Integration
 
-This plugin includes an MCP server configuration for [mobazha-mcp](https://github.com/mobazha/mobazha3.0) — a Model Context Protocol server that gives your AI agent direct access to your store's API.
+This plugin includes an MCP server configuration for `mobazha-mcp` — a Model Context Protocol server that gives your AI agent direct access to your store's API.
 
 Once connected, your agent can:
 
@@ -108,6 +120,12 @@ Once installed, your AI agent automatically discovers Mobazha skills. Ask it thi
 - "Set up a custom domain and Telegram bot for my store"
 
 The agent loads the relevant skill and walks you through the process step by step.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on adding or improving skills.
+
+See [TESTING.md](TESTING.md) for how to verify skills against a real store.
 
 ## About Mobazha
 

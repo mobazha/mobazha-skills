@@ -1,0 +1,84 @@
+name: Quality Check
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "**/*.md"
+          config: ".markdownlint.json"
+
+  link-check:
+    name: Link Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check internal links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --exclude-mail
+            --exclude 'https://app.mobazha.org'
+            --exclude 'https://shop.example.com'
+            --exclude 'http://localhost'
+            --exclude 'http://192.168'
+            --exclude '<'
+            "**/*.md"
+          fail: true
+
+  skill-structure:
+    name: Skill Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify each skill has SKILL.md
+        run: |
+          errors=0
+          for dir in skills/*/; do
+            if [ ! -f "${dir}SKILL.md" ]; then
+              echo "ERROR: ${dir} is missing SKILL.md"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "Found $errors skill directories without SKILL.md"
+            exit 1
+          fi
+          echo "All skill directories have SKILL.md"
+
+      - name: Verify skills are indexed
+        run: |
+          index="skills/using-mobazha/SKILL.md"
+          errors=0
+          for dir in skills/*/; do
+            skill_name=$(basename "$dir")
+            if [ "$skill_name" = "using-mobazha" ]; then
+              continue
+            fi
+            if ! grep -q "$skill_name" "$index"; then
+              echo "WARNING: $skill_name is not referenced in $index"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ $errors -gt 0 ]; then
+            echo "Found $errors skills not indexed in using-mobazha/SKILL.md"
+            exit 1
+          fi
+          echo "All skills are indexed"

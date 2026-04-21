@@ -1,0 +1,48 @@
+---
+description: Rules for authoring and editing Mobazha AI skills
+globs: "**/*.md"
+alwaysApply: true
+---
+
+# Mobazha Skill Authoring Rules
+
+## Audience
+
+Skills are for end users (sellers, buyers, store operators). Write for someone who can follow instructions but is not a programmer.
+
+## Forbidden Content
+
+Never include in any skill:
+
+- Internal service or provider names (identity providers, message brokers, databases)
+- Internal port numbers or Docker compose service names
+- Internal repository paths or code references
+- Internal infrastructure details (load balancers, reverse proxies, container orchestration)
+
+## Required Conventions
+
+- **SaaS auth**: "Sign in with Google, GitHub, or email" (never name the identity provider)
+- **Standalone auth**: "admin password" -> Bearer Token via `POST /platform/v1/auth/tokens`
+- **API calls**: Always use `Authorization: Bearer <token>`, never Basic Auth
+- **API paths**: Always `/v1/` prefix (e.g., `/v1/listings`, `/v1/profiles`, `/v1/media`)
+- **MCP SSE**: endpoint at `/platform/v1/mcp`
+- **Placeholders**: Use `<description>` format, explain each in surrounding text
+
+## Three Store Modes
+
+When a skill involves access URLs, authentication, or MCP connections, cover all three:
+
+1. **SaaS** — `app.mobazha.org`, OAuth login
+2. **VPS Standalone** — Docker on VPS, admin password + Bearer Token
+3. **NAT / Local** — native binary, same auth as VPS, localhost access
+
+## Structure
+
+- Each skill directory must have `SKILL.md`
+- Optional `references/` subdirectory for supporting data
+- Cross-reference other skills by name, don't duplicate content
+- Update `skills/using-mobazha/SKILL.md` index when adding/renaming skills
+
+## Quality Gate
+
+Before saving: no internal names, Bearer Token auth, `/v1/` paths, all modes covered, index updated.
