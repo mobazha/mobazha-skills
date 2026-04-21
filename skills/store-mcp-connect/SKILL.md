@@ -39,11 +39,31 @@ Your store runs on the same machine as your AI agent. This is the simplest setup
 
 ### Install the MCP Binary
 
-Download from GitHub Releases (when available), or build from source:
+Download the pre-built binary for your platform from GitHub Releases:
 
 ```bash
-go install github.com/mobazha/mobazha3.0/mcp/cmd/mobazha-mcp@latest
+# macOS (Apple Silicon)
+curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-darwin-arm64 -o mobazha-mcp
+chmod +x mobazha-mcp
+sudo mv mobazha-mcp /usr/local/bin/
+
+# macOS (Intel)
+curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-darwin-amd64 -o mobazha-mcp
+chmod +x mobazha-mcp
+sudo mv mobazha-mcp /usr/local/bin/
+
+# Linux (x86_64)
+curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-linux-amd64 -o mobazha-mcp
+chmod +x mobazha-mcp
+sudo mv mobazha-mcp /usr/local/bin/
+
+# Linux (ARM64)
+curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-linux-arm64 -o mobazha-mcp
+chmod +x mobazha-mcp
+sudo mv mobazha-mcp /usr/local/bin/
 ```
+
+> **Note**: For standalone Docker deployments, the MCP binary is already bundled in the container — you don't need to install it separately. For SaaS stores, use SSE (Scenario C) instead, which requires no local binary.
 
 ### Get Your Bearer Token
 
