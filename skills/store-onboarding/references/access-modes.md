@@ -8,7 +8,7 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 |---|---|---|---|
 | **What it is** | Hosted at `app.mobazha.org` | Docker on a VPS with public IP | Native binary or Docker on your own machine |
 | **Who it's for** | Quick start, no server needed | Full control, custom domain | Personal use, development, LAN selling |
-| **Admin URL** | `app.mobazha.org` (dashboard after login) | `https://shop.example.com/admin` or `http://<IP>/admin` | `http://localhost/admin` or `http://<LAN-IP>/admin` |
+| **Admin URL** | `app.mobazha.org` (dashboard after login) | `https://shop.example.com/admin` or `http://<IP>/admin` | Docker: `http://localhost/admin`; Native: `http://localhost:5102/admin` |
 | **Login method** | OAuth (Google, GitHub, or email) | Admin password (set during onboarding) | Admin password (set during onboarding) |
 | **Onboarding** | UI wizard after first login | Setup Wizard at `/admin` (4 steps, API-automatable) | Same as VPS |
 | **MCP connection** | SSE at `https://app.mobazha.org/platform/v1/mcp/sse` | SSE at `https://shop.example.com/platform/v1/mcp/sse` (or SSH tunnel) | SSE at `http://localhost:5102/platform/v1/mcp/sse` |
@@ -43,8 +43,8 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 
 ### Default Ports
 
-| Service | SaaS | VPS Standalone | NAT / Local (native) |
-|---------|------|---------------|---------------------|
-| Web UI | 443 (HTTPS) | 80/443 (Caddy proxy) | 80 (or custom) |
-| Gateway API | managed | same as web (proxied) | 5102 |
-| LibP2P | managed | 4001 | 4001 |
+| Service | SaaS | VPS Standalone | NAT / Local (Docker) | NAT / Local (native) |
+|---------|------|---------------|---------------------|---------------------|
+| Web UI | 443 (HTTPS) | 80/443 (Caddy proxy) | 80 (Caddy proxy) | 5102 |
+| Gateway API | managed | same as web (proxied) | same as web (proxied) | 5102 |
+| LibP2P | managed | 4001 | 4001 | 4001 |

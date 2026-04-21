@@ -13,7 +13,8 @@ Complete the first-time setup of your Mobazha store after deployment. This skill
 |------|-----------------|-------------------|
 | **SaaS** | Signed up at `app.mobazha.org` | UI-guided wizard after first login |
 | **VPS Standalone** | Deployed via `standalone-setup` skill | Setup Wizard at `https://<domain>/admin` |
-| **NAT / Local** | Installed via `native-install` skill | Setup Wizard at `http://localhost/admin` |
+| **NAT / Local (Docker)** | Docker without public IP | Setup Wizard at `http://localhost/admin` |
+| **NAT / Local (native)** | Installed via `native-install` skill | Setup Wizard at `http://localhost:5102/admin` |
 
 For a full comparison of access URLs, auth methods, and MCP connections across all modes, see `references/access-modes.md`.
 
@@ -120,7 +121,15 @@ Authorization: Bearer <token>
 
 ### Step 2: Store Profile
 
-Set your store's identity — name, description, and avatar.
+Set your store's identity — name, description, visibility, and avatar.
+
+**Visibility options:**
+
+| Value | Meaning |
+|-------|---------|
+| `public` | Appears in marketplace search and recommendations (default) |
+| `unlisted` | Hidden from search, accessible via direct link only |
+| `private` | Requires authorization to access |
 
 ```
 PUT /v1/profiles
@@ -131,11 +140,18 @@ Authorization: Bearer <token>
   "name": "My Store",
   "shortDescription": "A brief tagline for your store",
   "about": "Longer description about what you sell and your story",
+  "location": "New York, US",
+  "visibility": "public",
+  "nsfw": false,
+  "vendor": true,
   "avatarHashes": {
     "small": "<image-hash>",
     "medium": "<image-hash>"
   },
-  "vendor": true
+  "contactInfo": {
+    "website": "https://example.com",
+    "email": "store@example.com"
+  }
 }
 ```
 
@@ -196,13 +212,15 @@ For stores running on your local machine (native binary or Docker without a publ
 
 ### Access the Admin Panel
 
+For local Docker (with Caddy proxy):
+
 - **Same machine**: `http://localhost/admin`
 - **Other devices on LAN**: `http://<your-local-ip>/admin` (e.g., `http://192.168.1.100/admin`)
 
-If using the native binary with a custom gateway port:
+For native binary install (default port 5102):
 
-- **Gateway API**: `http://localhost:5102` (default for native)
-- **Web UI**: `http://localhost` (default port 80)
+- **Same machine**: `http://localhost:5102/admin`
+- **Other devices on LAN**: `http://<your-local-ip>:5102/admin`
 
 ### Onboarding Steps
 
