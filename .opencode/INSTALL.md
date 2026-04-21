@@ -6,7 +6,7 @@ Add to your `opencode.json`:
 
 ```json
 {
-  "plugin": ["mobazha-skills@git+https://github.com/mobazha/mobazha-skills.git"]
+  "plugin": ["mobazha@git+https://github.com/mobazha/mobazha-skills.git"]
 }
 ```
 
@@ -22,6 +22,6 @@ Then add to `opencode.json`:
 
 ```json
 {
-  "plugin": ["mobazha-skills@~/.mobazha-skills"]
+  "plugin": ["mobazha@~/.mobazha-skills"]
 }
 ```

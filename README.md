@@ -58,20 +58,20 @@ See the **store-mcp-connect** skill for setup instructions.
 ### Claude Code (Official Marketplace)
 
 ```
-/plugin install mobazha-skills@claude-plugins-official
+/plugin install mobazha@claude-plugins-official
 ```
 
 ### Claude Code (Mobazha Marketplace)
 
 ```
 /plugin marketplace add mobazha/mobazha-skills
-/plugin install mobazha-skills@mobazha-skills
+/plugin install mobazha@mobazha
 ```
 
 ### Cursor
 
 ```
-/add-plugin mobazha-skills
+/add-plugin mobazha
 ```
 
 ### OpenAI Codex CLI
@@ -92,7 +92,7 @@ Add to your `opencode.json`:
 
 ```json
 {
-  "plugin": ["mobazha-skills@git+https://github.com/mobazha/mobazha-skills.git"]
+  "plugin": ["mobazha@git+https://github.com/mobazha/mobazha-skills.git"]
 }
 ```
 
@@ -105,7 +105,7 @@ gemini extensions install https://github.com/mobazha/mobazha-skills
 ### OpenClaw
 
 ```
-openclaw plugins install mobazha-skills
+openclaw plugins install mobazha
 ```
 
 ## How It Works

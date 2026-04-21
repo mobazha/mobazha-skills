@@ -1,6 +1,6 @@
 {
-  "name": "mobazha-skills",
+  "name": "mobazha",
   "version": "0.1.0",
   "type": "module",
-  "main": ".opencode/plugins/mobazha-skills.js"
+  "main": ".opencode/plugins/mobazha.js"
 }
