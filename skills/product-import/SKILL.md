@@ -121,6 +121,7 @@ For the complete field reference, see [`references/mapping.md`](references/mappi
 Images referenced in `listings[].images` must be provided as base64-encoded data in the `images_base64` parameter. The filenames must match exactly.
 
 To prepare images:
+
 1. Download product images from the source platform
 2. Base64-encode each image file
 3. Build the `images_base64` JSON map: `{"filename.jpg": "<base64-data>"}`
