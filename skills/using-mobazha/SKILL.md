@@ -44,6 +44,16 @@ When the user asks about any of these topics, read the corresponding SKILL.md fi
 |-------|------|-------------|
 | **store-management** | `skills/store-management/SKILL.md` | Manage products, orders, messages, discounts via MCP tools |
 | **product-import** | `skills/product-import/SKILL.md` | Import products from Shopify, Amazon, Etsy, or other platforms |
+| **competitor-analysis** | `skills/competitor-analysis/SKILL.md` | Research competitor products, reviews, and pricing |
+
+### Content and Marketing
+
+| Skill | File | When to Use |
+|-------|------|-------------|
+| **product-description** | `skills/product-description/SKILL.md` | Generate SEO-optimized product descriptions for listings |
+| **store-copywriting** | `skills/store-copywriting/SKILL.md` | Write store profile, About section, and marketing copy |
+| **storefront-cro** | `skills/storefront-cro/SKILL.md` | Audit storefront for conversion rate optimization |
+| **product-image-prompt** | `skills/product-image-prompt/SKILL.md` | Craft AI image prompts for product photos and branding |
 
 ## How to Use Skills
 

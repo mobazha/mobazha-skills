@@ -27,7 +27,17 @@ AI-powered skills for [Mobazha](https://mobazha.org) — the decentralized comme
 | Skill | Description |
 |-------|-------------|
 | **store-management** | Manage products, orders, chat, discounts via 30+ MCP tools |
-| **product-import** | Import products from Shopify, Amazon, or Etsy into your store |
+| **product-import** | Bulk import products from Shopify, Amazon, or Etsy — CSV, API, or JSON |
+| **competitor-analysis** | Research competitor products, reviews, and pricing to inform your strategy |
+
+### Content and Marketing
+
+| Skill | Description |
+|-------|-------------|
+| **product-description** | Generate SEO-optimized, conversion-focused product descriptions |
+| **store-copywriting** | Write compelling store profile, About section, and campaign copy |
+| **storefront-cro** | Audit your storefront and get prioritized conversion optimization tips |
+| **product-image-prompt** | Craft AI image generation prompts for product photos and store branding |
 
 ## Store Modes
 
@@ -118,6 +128,10 @@ Once installed, your AI agent automatically discovers Mobazha skills. Ask it thi
 - "Import my Shopify products into Mobazha"
 - "Check my recent orders and fulfill the pending ones"
 - "Set up a custom domain and Telegram bot for my store"
+- "Write a better description for my handmade leather wallets"
+- "Audit my store and tell me how to get more sales"
+- "Generate product photo prompts for my candle collection"
+- "Analyze the competition on Etsy for organic skincare"
 
 The agent loads the relevant skill and walks you through the process step by step.
 
