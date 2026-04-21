@@ -109,8 +109,9 @@ curl -sSL https://get.mobazha.org/install | bash -s -- --uninstall --purge
 ## After Installation
 
 1. Open `http://localhost/admin` (or `https://your-domain/admin`)
-2. Complete the Setup Wizard (admin password, store name, currencies)
+2. Complete the **Setup Wizard** — set admin password, store name, region/currency (see `store-onboarding` skill for the full walkthrough)
 3. Add products and start selling
+4. (Optional) Connect your AI agent to the store via MCP for hands-free management — see `store-mcp-connect` skill
 
 ## Troubleshooting
 

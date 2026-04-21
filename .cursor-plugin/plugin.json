@@ -1,7 +1,7 @@
 {
   "name": "mobazha-skills",
   "displayName": "Mobazha Skills",
-  "description": "AI skills for Mobazha decentralized commerce: store deployment, product import, privacy tools",
+  "description": "AI skills for Mobazha decentralized commerce: store deployment, onboarding, MCP store management",
   "version": "0.1.0",
   "author": {
     "name": "Mobazha",
@@ -15,8 +15,21 @@
     "ecommerce",
     "decentralized",
     "self-hosted",
-    "web3"
+    "web3",
+    "mcp"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks/hooks-cursor.json"
+  "hooks": "./hooks/hooks-cursor.json",
+  "mcp": {
+    "servers": {
+      "mobazha-store": {
+        "command": "mobazha-mcp",
+        "args": ["--gateway-url", "${MOBAZHA_GATEWAY_URL}", "--token", "${MOBAZHA_TOKEN}"],
+        "env": {
+          "MOBAZHA_GATEWAY_URL": "http://localhost:8100",
+          "MOBAZHA_TOKEN": ""
+        }
+      }
+    }
+  }
 }

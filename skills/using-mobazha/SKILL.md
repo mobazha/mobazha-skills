@@ -17,13 +17,28 @@ Mobazha is a decentralized e-commerce platform for independent sellers. Key feat
 
 When the user asks about any of these topics, read the corresponding SKILL.md file before proceeding:
 
+### Deploy and Install
+
 | Skill | File | When to Use |
 |-------|------|-------------|
-| **standalone-setup** | `skills/standalone-setup/SKILL.md` | User wants to deploy a self-hosted store on a VPS using Docker |
-| **native-install** | `skills/native-install/SKILL.md` | User wants to install the native binary on Linux, macOS, or Windows |
-| **subdomain-bot-config** | `skills/subdomain-bot-config/SKILL.md` | User wants to set up a custom domain or Telegram Bot for their store |
-| **tor-browsing** | `skills/tor-browsing/SKILL.md` | User wants to browse Mobazha stores via Tor, or run a store as a .onion hidden service |
-| **product-import** | `skills/product-import/SKILL.md` | User wants to import products from Shopify, Amazon, Etsy, or other platforms |
+| **standalone-setup** | `skills/standalone-setup/SKILL.md` | Deploy a self-hosted store on a VPS using Docker |
+| **native-install** | `skills/native-install/SKILL.md` | Install the native binary on Linux, macOS, or Windows |
+| **store-onboarding** | `skills/store-onboarding/SKILL.md` | First-time `/admin` setup: password, store profile, region/currency |
+
+### Configure and Connect
+
+| Skill | File | When to Use |
+|-------|------|-------------|
+| **subdomain-bot-config** | `skills/subdomain-bot-config/SKILL.md` | Set up a custom domain or Telegram Bot for a store |
+| **tor-browsing** | `skills/tor-browsing/SKILL.md` | Browse stores via Tor, or run a store as a .onion hidden service |
+| **store-mcp-connect** | `skills/store-mcp-connect/SKILL.md` | Connect an AI agent to a store via MCP for direct management |
+
+### Operate and Grow
+
+| Skill | File | When to Use |
+|-------|------|-------------|
+| **store-management** | `skills/store-management/SKILL.md` | Manage products, orders, messages, discounts via MCP tools |
+| **product-import** | `skills/product-import/SKILL.md` | Import products from Shopify, Amazon, Etsy, or other platforms |
 
 ## How to Use Skills
 
@@ -40,8 +55,13 @@ When the user asks about any of these topics, read the corresponding SKILL.md fi
 - **Telegram Group**: https://t.me/MobazhaHQ
 - **GitHub**: https://github.com/mobazha
 
+## MCP Integration
+
+For the most powerful experience, connect your AI agent to the store via **MCP (Model Context Protocol)**. This gives the agent direct access to 30+ store management tools — products, orders, chat, discounts, and more. See `store-mcp-connect` for setup instructions.
+
 ## Important Notes
 
 - Mobazha uses **external wallets** for crypto payments (buyers and sellers connect their own wallets). There is no internal wallet requiring deposit or withdrawal.
 - The SaaS platform at `app.mobazha.org` is the hosted version. Self-hosted stores are fully independent.
 - All install scripts are served from `get.mobazha.org` (which redirects to static assets on `mobazha.org`).
+- After deploying a store, the seller must visit `/admin` to complete the Setup Wizard before the store is operational.

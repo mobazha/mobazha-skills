@@ -80,17 +80,23 @@ The installer automatically:
 5. Sets up a systemd timer for hourly auto-updates
 6. Installs the `mobazha-ctl` management CLI to `/usr/local/bin/`
 
-### Step 4: Complete the Setup Wizard
+### Step 4: Complete the Store Onboarding
 
-Open the store URL in a browser:
+Open the store admin panel in a browser:
 
 - **With domain**: `https://shop.example.com/admin`
 - **Without domain**: `http://<VPS_IP>/admin`
 
-The Setup Wizard guides you through:
-- Setting an admin password
-- Choosing a store name
-- Selecting accepted payment currencies
+On first visit, a **Setup Wizard** appears with 4 steps:
+
+1. **Set admin password** — required before anything else
+2. **Store profile** — name, description, avatar
+3. **Region and currency** — country and display currency
+4. **Done** — dashboard unlocked, next steps suggested
+
+For the full onboarding walkthrough (including API-based setup by AI agents), see the `store-onboarding` skill.
+
+After onboarding, consider connecting your AI agent to the store for hands-free management — see the `store-mcp-connect` skill.
 
 ### Step 5: Verify the Installation
 
