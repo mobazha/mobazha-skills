@@ -125,108 +125,43 @@ curl -X POST "https://your-store.example.com/v1/listings/import/json" \
 }
 ```
 
+## References
+
+Detailed per-platform extraction guides and field mappings are in the `references/` directory:
+
+| File | Description |
+|------|-------------|
+| [`references/shopify-api.md`](references/shopify-api.md) | Shopify CSV export and Admin API data extraction |
+| [`references/amazon-scrape.md`](references/amazon-scrape.md) | Amazon product page scraping with BeautifulSoup |
+| [`references/mapping.md`](references/mapping.md) | Universal field mapping table (all platforms → Mobazha) |
+
 ## Supported Sources
 
 | Source | Method | Notes |
 |--------|--------|-------|
-| Shopify | CSV export or API | Best option: export from Shopify admin |
-| Amazon | Web scraping | Product detail pages |
-| Etsy | CSV export or API | Best option: export from Etsy Shop Manager |
+| Shopify | CSV export or API | See [`references/shopify-api.md`](references/shopify-api.md) |
+| Amazon | Web scraping | See [`references/amazon-scrape.md`](references/amazon-scrape.md) |
+| Etsy | CSV export or API | Export from Etsy Shop Manager |
 | WooCommerce | CSV/JSON export | Export from WooCommerce admin |
 | Generic CSV | Manual | Any CSV with title, description, price, images |
 
-## Method 1: Shopify Import (CSV)
+## Method 1: Shopify Import
 
-### Step 1: Export from Shopify
+1. Export products via CSV or API — see [`references/shopify-api.md`](references/shopify-api.md) for details
+2. Transform to Mobazha format — see [`references/mapping.md`](references/mapping.md) for field mapping
+3. Download all product images locally
+4. Build the `listings.json` (include `shippingProfiles` for physical goods)
+5. Upload via `listings_import_json` MCP tool or direct ZIP API
 
-1. In Shopify Admin, go to **Products → All Products**
-2. Click **Export** → select **All products** → **CSV for Excel/Numbers**
-3. Download the CSV file
+## Method 2: Amazon Product Import
 
-### Step 2: Transform to Mobazha Format
+1. Collect product URLs or ASINs to import
+2. Extract product data — see [`references/amazon-scrape.md`](references/amazon-scrape.md) for scraping code and DOM selectors
+3. Transform to Mobazha JSON format — see [`references/mapping.md`](references/mapping.md)
+4. Download images locally (use high-res URLs: replace `_AC_US40_` with `_AC_SL1500_`)
+5. Upload via `listings_import_json` MCP tool or direct ZIP API
 
-Shopify CSV columns map to Mobazha fields:
-
-| Shopify Column | Mobazha Field | Notes |
-|----------------|---------------|-------|
-| Title | `title` | Product name |
-| Body (HTML) | `description` | Strip HTML tags for clean text |
-| Vendor | `tags` | Map to appropriate tags |
-| Type | `tags` | Additional categorization |
-| Tags | `tags` | Comma-separated |
-| Variant Price | `price` | Primary variant price |
-| Variant SKU | `variants[].productID` | SKU identifier |
-| Image Src | `images[]` | Download and include in ZIP |
-| Variant Inventory Qty | `quantity` | Stock count |
-
-### Step 3: Build and Upload
-
-1. Parse CSV rows, grouping variants by product handle
-2. Download all product images
-3. Build the `listings.json` with shipping profiles
-4. Package into a ZIP and upload via `listings_import_json` MCP tool or direct API
-
-## Method 2: Amazon Product Scraping
-
-### Step 1: Identify Products
-
-Collect Amazon product URLs or ASINs to import. Example:
-
-```
-https://www.amazon.com/dp/B0XXXXXXXXX
-```
-
-### Step 2: Extract Product Data
-
-For each product URL, extract:
-
-- **Title**: product name
-- **Description**: bullet points + product description
-- **Price**: current selling price
-- **Images**: all product images (high-resolution)
-- **Variants**: color, size, or other options
-- **Category**: Amazon browse node category
-
-#### Scraping Approach
-
-Use the product page to extract structured data:
-
-```python
-import requests
-from bs4 import BeautifulSoup
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-}
-
-def scrape_amazon_product(url):
-    resp = requests.get(url, headers=headers)
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    title = soup.find("span", id="productTitle")
-    price = soup.find("span", class_="a-price-whole")
-    images = soup.find_all("img", class_="a-dynamic-image")
-    bullets = soup.find("div", id="feature-bullets")
-
-    return {
-        "title": title.get_text(strip=True) if title else "",
-        "price": float(price.get_text(strip=True).replace(",", "")) if price else 0,
-        "images": [img.get("src", "").replace("_AC_US40_", "_AC_SL1500_") for img in images],
-        "description": bullets.get_text(strip=True) if bullets else "",
-    }
-```
-
-### Step 3: Transform and Upload
-
-Convert extracted data to the bulk import JSON format and use the `listings_import_json` MCP tool.
-
-### Important Notes on Scraping
-
-- Respect robots.txt and rate limits
-- Amazon may block automated access; use appropriate delays between requests
-- Product descriptions may need editing for your store context
-- Verify pricing — don't blindly copy competitor prices
-- Download images locally rather than hotlinking
+**Important**: Respect robots.txt and rate limits; use 3-5 second delays between requests; verify pricing before import
 
 ## Method 3: Individual Listing Create
 
