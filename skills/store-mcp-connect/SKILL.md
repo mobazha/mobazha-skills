@@ -8,7 +8,7 @@ After connecting, your AI agent has access to 30+ store management tools:
 
 | Category | Tools | What They Do |
 |----------|-------|-------------|
-| **Products** | `listings_create`, `listings_update`, `listings_delete`, `listings_list_mine` | Full product CRUD |
+| **Products** | `listings_create`, `listings_update`, `listings_delete`, `listings_list_mine`, `listings_import_json` | Full product CRUD + bulk import |
 | **Orders** | `orders_get_sales`, `orders_confirm`, `orders_fulfill`, `orders_refund` | Order lifecycle |
 | **Chat** | `chat_get_conversations`, `chat_send_message` | Buyer communication |
 | **Discounts** | `discounts_create`, `discounts_update`, `discounts_delete` | Promotions |
@@ -18,214 +18,122 @@ After connecting, your AI agent has access to 30+ store management tools:
 | **Search** | `search_listings`, `search_profiles` | Marketplace discovery |
 | **Finance** | `exchange_rates_get`, `wallet_get_receiving_accounts`, `fiat_get_providers` | Payments and rates |
 
-## Choose Your Scenario
+## Connection Method: SSE (Recommended)
 
-| Scenario | Transport | Connection Target |
-|----------|-----------|-------------------|
-| **Local store** (native or Docker) | stdio | `localhost:8100` (native) or `localhost` (Docker) |
-| **Remote VPS** | stdio via SSH tunnel (recommended) or SSE | SSH to VPS, then `localhost:8100` |
-| **SaaS platform** | SSE | `https://app.mobazha.org/platform/v1/mcp` |
+All Mobazha deployments include a built-in MCP SSE endpoint. This is the recommended method because:
 
----
+- No additional binary to install or maintain
+- Tools are always up-to-date with your store version
+- Works with Claude Code, Cursor, Codex, and all modern AI agents
 
-## Scenario A: Local Store (Native or Docker)
+### SSE Endpoint
 
-Your store runs on the same machine as your AI agent. This is the simplest setup.
-
-### Prerequisites
-
-1. A running Mobazha store (onboarding completed — see `store-onboarding` skill)
-2. The `mobazha-mcp` binary installed
-
-### Install the MCP Binary
-
-Download the pre-built binary for your platform from GitHub Releases:
-
-```bash
-# macOS (Apple Silicon)
-curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-darwin-arm64 -o mobazha-mcp
-chmod +x mobazha-mcp
-sudo mv mobazha-mcp /usr/local/bin/
-
-# macOS (Intel)
-curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-darwin-amd64 -o mobazha-mcp
-chmod +x mobazha-mcp
-sudo mv mobazha-mcp /usr/local/bin/
-
-# Linux (x86_64)
-curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-linux-amd64 -o mobazha-mcp
-chmod +x mobazha-mcp
-sudo mv mobazha-mcp /usr/local/bin/
-
-# Linux (ARM64)
-curl -L https://github.com/mobazha/mobazha-skills/releases/latest/download/mobazha-mcp-linux-arm64 -o mobazha-mcp
-chmod +x mobazha-mcp
-sudo mv mobazha-mcp /usr/local/bin/
-```
-
-> **Note**: For standalone Docker deployments, the MCP binary is already bundled in the container — you don't need to install it separately. For SaaS stores, use SSE (Scenario C) instead, which requires no local binary.
-
-### Get Your Bearer Token
-
-Obtain an API token for MCP authentication:
-
-```bash
-curl -X POST http://localhost:8100/platform/v1/auth/tokens \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "<your-admin-password>"}'
-```
-
-Save the returned token. Set it as an environment variable:
-
-```bash
-export MOBAZHA_TOKEN="<your-token>"
-```
-
-### Configure Your AI Agent
-
-**Claude Desktop / Claude Code** — add to `~/.claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mobazha-store": {
-      "command": "mobazha-mcp",
-      "args": ["--gateway-url", "http://localhost:8100"]
-    }
-  }
-}
-```
-
-**Cursor** — add to `.cursor/mcp.json` in your project:
-
-```json
-{
-  "mcpServers": {
-    "mobazha-store": {
-      "command": "mobazha-mcp",
-      "args": ["--gateway-url", "http://localhost:8100"]
-    }
-  }
-}
-```
-
-Or go to **Settings > MCP Servers > Add Server** and enter the command manually.
-
-**Codex CLI**:
-
-```bash
-codex mcp add mobazha-store -- mobazha-mcp --gateway-url http://localhost:8100
-```
-
-**OpenCode** — add to `opencode.json`:
-
-```json
-{
-  "mcp": {
-    "mobazha-store": {
-      "command": "mobazha-mcp",
-      "args": ["--gateway-url", "http://localhost:8100"]
-    }
-  }
-}
-```
-
-The `MOBAZHA_TOKEN` environment variable is automatically picked up by `mobazha-mcp`. Alternatively, pass `--token <token>` as a CLI flag.
+| Deployment | SSE URL |
+|------------|---------|
+| **SaaS** | `https://app.mobazha.org/platform/v1/mcp/sse` |
+| **Standalone (custom domain)** | `https://shop.example.com/platform/v1/mcp/sse` |
+| **Standalone (local Docker)** | `http://localhost/platform/v1/mcp/sse` |
+| **Native install** | `http://localhost:8100/platform/v1/mcp/sse` |
 
 ---
 
-## Scenario B: Remote VPS
+## Step 1: Get Your API Token
 
-Your store runs on a remote server. Two options: SSH tunnel (recommended) or direct SSE.
-
-### Option 1: SSH Tunnel + stdio (Recommended)
-
-This is the most secure approach — no need to expose the MCP endpoint publicly.
-
-**Step 1**: Open an SSH tunnel to your VPS:
-
-```bash
-ssh -L 8100:localhost:8100 root@<vps-ip>
-```
-
-This maps your local port 8100 to the store's gateway on the VPS.
-
-**Step 2**: Get a Bearer token (through the tunnel):
-
-```bash
-curl -X POST http://localhost:8100/platform/v1/auth/tokens \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "<your-admin-password>"}'
-```
-
-**Step 3**: Configure your AI agent with the same local configs as Scenario A (pointing to `http://localhost:8100`).
-
-### Option 2: SSE (Direct Remote Connection)
-
-If your store has a public domain with HTTPS, your AI agent can connect directly via SSE without installing `mobazha-mcp`.
-
-```
-SSE endpoint: https://shop.example.com/platform/v1/mcp
-```
-
-For platforms that support SSE MCP connections, use:
-
-- **URL**: `https://shop.example.com/platform/v1/mcp`
-- **Header**: `Authorization: Bearer <your-token>`
-
-Get the token the same way as above (via `/platform/v1/auth/tokens`).
-
----
-
-## Scenario C: SaaS Platform
-
-Your store is hosted on `app.mobazha.org`. Connect via SSE.
-
-### Get an API Token
+### SaaS Store
 
 1. Log in to your store at `app.mobazha.org`
 2. Go to **Settings > API**
 3. Click **Generate Token**
 4. Copy the token
 
-### Connect via SSE
-
-The SaaS platform exposes the MCP endpoint at:
-
-```
-https://app.mobazha.org/platform/v1/mcp
-```
-
-For AI agent platforms that support SSE MCP connections, configure:
-
-- **URL**: `https://app.mobazha.org/platform/v1/mcp`
-- **Header**: `Authorization: Bearer <your-api-token>`
-
-### Connect via stdio (with mobazha-mcp)
-
-You can also use the `mobazha-mcp` binary pointing to the SaaS gateway:
+### Standalone or Native Store
 
 ```bash
-mobazha-mcp \
-  --gateway-url https://app.mobazha.org \
-  --token <your-api-token>
+curl -X POST http://localhost:8100/platform/v1/auth/tokens \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "<your-admin-password>"}'
 ```
 
-Configure your AI agent the same way as Scenario A, replacing the gateway URL.
+For remote VPS, replace `localhost:8100` with your store's domain or use an SSH tunnel:
+
+```bash
+ssh -L 8100:localhost:8100 root@<vps-ip>
+```
 
 ---
 
-## CLI Reference
+## Step 2: Configure Your AI Agent
 
-| Flag | Env Variable | Default | Description |
-|------|-------------|---------|-------------|
-| `--gateway-url` | `MOBAZHA_GATEWAY_URL` | `http://localhost:8100` | Store gateway URL |
-| `--token` | `MOBAZHA_TOKEN` | (required) | Bearer token for authentication |
-| `--search-url` | `MOBAZHA_SEARCH_URL` | (optional) | Marketplace search API URL |
+### Claude Code
 
-## Verify the Connection
+Add to `~/.claude.json` (or project-level `.mcp.json`):
 
-After configuring, ask your AI agent:
+```json
+{
+  "mcpServers": {
+    "mobazha-store": {
+      "type": "sse",
+      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer <your-token>"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to `.cursor/mcp.json` in your project:
+
+```json
+{
+  "mcpServers": {
+    "mobazha-store": {
+      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer <your-token>"
+      }
+    }
+  }
+}
+```
+
+Or go to **Settings > MCP Servers > Add Server** and enter the SSE URL.
+
+### Codex CLI
+
+```bash
+codex mcp add mobazha-store --transport sse \
+  --url "https://shop.example.com/platform/v1/mcp/sse" \
+  --header "Authorization: Bearer <your-token>"
+```
+
+### OpenCode
+
+Add to `opencode.json`:
+
+```json
+{
+  "mcp": {
+    "mobazha-store": {
+      "type": "sse",
+      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer <your-token>"
+      }
+    }
+  }
+}
+```
+
+> Replace `https://shop.example.com` with your actual store URL from the table above.
+
+---
+
+## Step 3: Verify the Connection
+
+Ask your AI agent:
 
 > "List my store's products" or "Show my recent orders"
 
@@ -233,27 +141,73 @@ The agent should call `listings_list_mine` or `orders_get_sales` and return resu
 
 For a guide on what you can do with MCP tools, see the `store-management` skill.
 
+---
+
+## Advanced: stdio Transport
+
+For environments where SSE is not supported by the AI agent, or for air-gapped setups, a `mobazha-mcp` stdio binary is available. It ships with the standalone Docker image and native install.
+
+### When to Use stdio
+
+- Your AI agent doesn't support SSE MCP transport
+- Air-gapped or restricted network environment
+- Development/debugging of the MCP layer itself
+
+### Using stdio from Standalone Docker
+
+The binary is bundled in the container:
+
+```bash
+docker exec -it <container> mobazha-mcp --gateway-url http://localhost:8100 --token <token>
+```
+
+### stdio CLI Reference
+
+| Flag | Env Variable | Default | Description |
+|------|-------------|---------|-------------|
+| `--gateway-url` | `MOBAZHA_GATEWAY_URL` | `http://localhost:8100` | Store gateway URL |
+| `--token` | `MOBAZHA_TOKEN` | (required) | Bearer token |
+| `--search-url` | `MOBAZHA_SEARCH_URL` | (optional) | Marketplace search API URL |
+
+### stdio Agent Configuration
+
+```json
+{
+  "mcpServers": {
+    "mobazha-store": {
+      "command": "mobazha-mcp",
+      "args": ["--gateway-url", "http://localhost:8100"],
+      "env": {
+        "MOBAZHA_TOKEN": "<your-token>"
+      }
+    }
+  }
+}
+```
+
+---
+
 ## Troubleshooting
 
-### "connection refused" or "dial tcp" errors
+### "connection refused" or timeout
 
 - Verify the store is running: `curl http://localhost:8100/healthz`
-- For remote stores, ensure the SSH tunnel is active
-- Check that the gateway port matches (8100 is the default for native; Docker standalone proxies through port 80/443)
+- For remote stores, check that the domain resolves and HTTPS is configured
+- Docker standalone: the SSE endpoint is at port 80/443 (not 8100)
 
 ### "401 Unauthorized"
 
 - Verify the token: `curl -H "Authorization: Bearer <token>" http://localhost:8100/v1/profiles`
-- Token may have expired — generate a new one via `/platform/v1/auth/tokens`
-- For SaaS: ensure the API token is still valid in Settings > API
+- Token may have expired — generate a new one
+- Ensure the token has the required scopes for the tools you want to use
 
 ### "tool not found"
 
-- `search_listings` and `search_profiles` only appear when `--search-url` is configured
-- Some tools require specific scopes on the API token
+- `search_listings` and `search_profiles` require the marketplace search service
+- Some tools require specific scopes on the API token (e.g., `listings:write` for `listings_create`)
 
 ### Credential Safety
 
-- Store the token in environment variables (`MOBAZHA_TOKEN`), not in config files committed to git
+- Store the token in environment variables, not in config files committed to git
 - Add MCP config files to `.gitignore` if they contain tokens
 - Tokens can be revoked and regenerated at any time
