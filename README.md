@@ -36,9 +36,14 @@ AI-powered skills for Mobazha — the decentralized commerce platform. Whether y
 ### OpenAI Codex CLI
 
 ```
-/plugins
+codex marketplace add mobazha/mobazha-skills
 ```
-Search for "mobazha-skills" and select Install Plugin.
+
+### GitHub Copilot CLI
+
+```
+copilot plugin marketplace add mobazha/mobazha-skills
+```
 
 ### OpenCode
 
