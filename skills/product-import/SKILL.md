@@ -4,11 +4,126 @@ Import products from Shopify, Amazon, Etsy, and other e-commerce platforms into 
 
 ## Overview
 
-This skill helps you migrate or copy product listings from existing platforms into Mobazha. The process involves:
+This skill helps you migrate or copy product listings from existing platforms into Mobazha. Two approaches are available:
 
-1. **Extract** — scrape or export product data from the source platform
-2. **Transform** — convert to Mobazha's listing format
-3. **Load** — create listings in your Mobazha store via the Admin API
+- **Bulk Import (recommended)** — package products as a ZIP with JSON + images and upload in one call
+- **Individual Create** — create listings one at a time via the Admin API
+
+## Bulk Import via MCP Tool
+
+If the store is connected via MCP, use the `listings_import_json` tool for the fastest bulk import:
+
+```json
+{
+  "import_json": "{\"listings\":[...], \"shippingProfiles\":[...]}",
+  "images_base64": "{\"photo1.jpg\":\"<base64>\",\"photo2.jpg\":\"<base64>\"}"
+}
+```
+
+The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/import/json`.
+
+### import_json Schema
+
+```json
+{
+  "listings": [
+    {
+      "slug": "unique-product-slug",
+      "title": "Product Name",
+      "contractType": "PHYSICAL_GOOD",
+      "price": "29.99",
+      "pricingCurrency": "USD",
+      "description": "Product description",
+      "tags": ["tag1", "tag2"],
+      "condition": "NEW",
+      "nsfw": false,
+      "images": ["photo1.jpg", "photo2.jpg"],
+      "quantity": 100,
+      "shippingProfileId": "Standard Shipping"
+    }
+  ],
+  "shippingProfiles": [
+    {
+      "key": "Standard Shipping",
+      "name": "Standard Shipping",
+      "isDefault": true,
+      "locationGroups": [
+        {
+          "name": "Worldwide",
+          "locations": [{ "country": "ALL" }],
+          "shippingOptions": [
+            { "name": "Standard", "type": "FIXED_PRICE", "price": "5.00" }
+          ]
+        }
+      ]
+    }
+  ],
+  "profile": {
+    "name": "Store Name",
+    "about": "Store description"
+  }
+}
+```
+
+### Contract Types
+
+| Type | Notes |
+|------|-------|
+| `PHYSICAL_GOOD` | Requires `shippingProfileId` matching a profile key/name |
+| `DIGITAL_GOOD` | No shipping needed |
+| `SERVICE` | No shipping needed |
+| `CRYPTOCURRENCY` | Token/coin listings |
+
+### Image Handling
+
+Images referenced in `listings[].images` must be provided as base64-encoded data in the `images_base64` parameter. The filenames must match exactly.
+
+To prepare images:
+1. Download product images from the source platform
+2. Base64-encode each image file
+3. Build the `images_base64` JSON map: `{"filename.jpg": "<base64-data>"}`
+
+## Bulk Import via Direct API
+
+For non-MCP contexts (e.g., shell scripts), build a ZIP file manually:
+
+### ZIP Structure
+
+```
+my-import/
+├── listings.json          # Required: product data + shipping profiles
+├── profile.json           # Optional: store profile data
+├── images/                # Product images referenced in listings.json
+│   ├── photo1.jpg
+│   ├── photo2.png
+│   └── ...
+└── videos/                # Optional: intro videos
+    └── demo.mp4
+```
+
+### Upload
+
+```bash
+curl -X POST "https://your-store.example.com/v1/listings/import/json" \
+  -H "Authorization: Bearer <token>" \
+  -F "file=@my-import.zip"
+```
+
+### Response
+
+```json
+{
+  "data": {
+    "total": 10,
+    "created": 8,
+    "updated": 2,
+    "failed": 0,
+    "createdItems": [{ "slug": "product-1", "title": "Product 1" }],
+    "updatedItems": [{ "slug": "product-2", "title": "Product 2" }],
+    "errors": []
+  }
+}
+```
 
 ## Supported Sources
 
@@ -28,44 +143,28 @@ This skill helps you migrate or copy product listings from existing platforms in
 2. Click **Export** → select **All products** → **CSV for Excel/Numbers**
 3. Download the CSV file
 
-### Step 2: Parse the CSV
+### Step 2: Transform to Mobazha Format
 
-Shopify CSV columns map to Mobazha fields as follows:
+Shopify CSV columns map to Mobazha fields:
 
 | Shopify Column | Mobazha Field | Notes |
 |----------------|---------------|-------|
 | Title | `title` | Product name |
 | Body (HTML) | `description` | Strip HTML tags for clean text |
-| Vendor | `categories` | Map to appropriate category |
-| Type | `categories` | Additional categorization |
+| Vendor | `tags` | Map to appropriate tags |
+| Type | `tags` | Additional categorization |
 | Tags | `tags` | Comma-separated |
 | Variant Price | `price` | Primary variant price |
-| Variant SKU | `variants[].sku` | If multiple variants |
-| Image Src | `images[]` | Download and re-upload URLs |
+| Variant SKU | `variants[].productID` | SKU identifier |
+| Image Src | `images[]` | Download and include in ZIP |
 | Variant Inventory Qty | `quantity` | Stock count |
 
-### Step 3: Create Listings
+### Step 3: Build and Upload
 
-For each product row in the CSV, construct a Mobazha listing and create it via the store's Admin API:
-
-```
-POST /v1/listings
-Content-Type: application/json
-Cookie: <session-cookie>
-
-{
-  "title": "Product Name",
-  "description": "Product description text",
-  "price": 29.99,
-  "priceCurrency": "USD",
-  "quantity": 100,
-  "categories": ["Category"],
-  "tags": ["tag1", "tag2"],
-  "images": [{"hash": "<image-hash-from-upload>"}],
-  "condition": "NEW",
-  "listingType": "FIXED_PRICE"
-}
-```
+1. Parse CSV rows, grouping variants by product handle
+2. Download all product images
+3. Build the `listings.json` with shipping profiles
+4. Package into a ZIP and upload via `listings_import_json` MCP tool or direct API
 
 ## Method 2: Amazon Product Scraping
 
@@ -117,9 +216,9 @@ def scrape_amazon_product(url):
     }
 ```
 
-### Step 3: Transform and Load
+### Step 3: Transform and Upload
 
-Convert the scraped data to Mobazha listing format and POST to the Admin API (same as Shopify Method Step 3).
+Convert extracted data to the bulk import JSON format and use the `listings_import_json` MCP tool.
 
 ### Important Notes on Scraping
 
@@ -127,65 +226,56 @@ Convert the scraped data to Mobazha listing format and POST to the Admin API (sa
 - Amazon may block automated access; use appropriate delays between requests
 - Product descriptions may need editing for your store context
 - Verify pricing — don't blindly copy competitor prices
-- Images: download and re-upload rather than hotlinking
+- Download images locally rather than hotlinking
 
-## Method 3: CSV Bulk Import
+## Method 3: Individual Listing Create
 
-For any platform that supports CSV export, prepare a CSV with these columns:
+For small imports (< 10 products), create listings one at a time via the `listings_create` MCP tool:
 
-```csv
-title,description,price,currency,quantity,category,tags,image_urls,condition
-"Product 1","Description here",19.99,USD,50,"Electronics","gadget,tech","https://img1.jpg|https://img2.jpg",NEW
-"Product 2","Another item",9.99,USD,100,"Clothing","fashion","https://img3.jpg",NEW
+```json
+{
+  "listing_json": "{\"slug\":\"my-product\",\"metadata\":{\"contractType\":\"DIGITAL_GOOD\",...},\"item\":{\"title\":\"...\",\"price\":\"9.99\",...}}"
+}
 ```
 
-Then iterate rows and create listings via the Admin API.
-
-## Working with the Admin API
-
-### Authentication
-
-Mobazha stores use session-based authentication. The user should provide:
-
-- The store URL (e.g., `https://shop.example.com`)
-- Admin username and password
-
-Log in via `POST /v1/login` to obtain a session cookie, then include it in subsequent requests.
-
-### Uploading Images
-
-Before creating a listing, upload images:
+Or via the Admin API:
 
 ```
-POST /v1/media
+POST /v1/listings
 Content-Type: application/json
-Cookie: <session-cookie>
-
-[{ "image": "<base64-encoded-image-data>", "filename": "product-photo.jpg" }]
+Authorization: Bearer <token>
 ```
 
-The response returns image hashes to reference in the listing's `images` array.
+Images must be uploaded first via `POST /v1/media` to obtain content hashes.
 
-See also: `references/shopify-csv-mapping.md` for detailed field mapping from Shopify CSV exports.
+## Authentication
 
-### Rate Considerations
+### MCP Connection
 
-When importing many products:
+If the store is connected via MCP (recommended), authentication is handled automatically through the MCP session token.
 
-- Process one at a time to avoid overwhelming the store
-- Wait for each listing creation to succeed before starting the next
-- Upload images first, then reference them in the listing
+### Direct API Access
+
+For direct API calls, authenticate via OAuth to obtain a Bearer token, then include it in the `Authorization` header.
+
+## Rate Considerations
+
+- Bulk import handles rate management internally — one ZIP upload imports all products
+- For individual creates, process one at a time and wait for each to succeed
 - Report progress to the user (e.g., "Created 15/50 listings...")
+- Large ZIP files (100+ products with images) may take 30-60 seconds to process
 
 ## Credential Handling
 
-- If the user provides store admin credentials, use them only for the import session
 - Never store, log, or display API keys or passwords after use
 - For Shopify/Etsy API access, the user should provide their own API keys
+- MCP tokens are session-scoped and managed by the platform
 
 ## Limitations
 
 - Product reviews cannot be imported (they are store-specific)
-- Shipping profiles need to be configured separately in Mobazha
+- Physical goods require shipping profiles — include them in the import JSON
 - Payment options are set at the store level, not per-product
 - Digital product files must be re-uploaded to Mobazha
+- Maximum ZIP size: 300 MB (configurable)
+- Maximum video size per listing: 15 MB
