@@ -1,47 +1,55 @@
-# Mobazha Skills
+<div align="center">
+  <img src="https://mobazha.org/brand/mobazha-logo-640.svg" width="80" alt="Mobazha">
+  <h1>Mobazha Skills</h1>
+  <p><strong>AI-powered skills for the Mobazha decentralized commerce platform</strong></p>
+  <p>
+    <a href="https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml"><img src="https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml/badge.svg" alt="Quality Check"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  </p>
+</div>
 
-[![Quality Check](https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml/badge.svg)](https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml)
+Deploy stores, import products from Shopify/Amazon, generate descriptions, optimize conversions, and manage your entire business — all through your AI coding agent with 30+ MCP tools.
 
-AI-powered skills for [Mobazha](https://mobazha.org) — the decentralized commerce platform. Deploy stores, complete onboarding, import products, and manage your business through AI agents with built-in MCP integration.
+## Quick Start
 
-## What's Inside
+Install the plugin, then ask your AI agent:
+
+> "Help me deploy a Mobazha store on my VPS"
+>
+> "Import my Shopify products into Mobazha"
+>
+> "Audit my store and tell me how to get more sales"
+
+See [Installation](#installation) for setup instructions on your platform.
+
+## Skills
 
 ### Deploy and Install
 
-| Skill | Description |
-|-------|-------------|
-| **standalone-setup** | Deploy a self-hosted Mobazha store on any VPS with Docker |
-| **native-install** | Install the native binary on Linux, macOS, or Windows |
-| **store-onboarding** | First-time setup: admin password, store profile, region/currency |
+- **standalone-setup** — Deploy a self-hosted store on any VPS with Docker
+- **native-install** — Install the native binary on Linux, macOS, or Windows
+- **store-onboarding** — First-time setup: admin password, store profile, region/currency
 
 ### Configure and Connect
 
-| Skill | Description |
-|-------|-------------|
-| **subdomain-bot-config** | Set up a custom domain and Telegram Bot for your store |
-| **tor-browsing** | Configure Tor Browser to access .onion stores privately |
-| **store-mcp-connect** | Connect your AI agent to your store via MCP for direct management |
+- **subdomain-bot-config** — Set up a custom domain and Telegram Bot for your store
+- **tor-browsing** — Configure Tor Browser to access .onion stores privately
+- **store-mcp-connect** — Connect your AI agent to your store via MCP for direct management
 
 ### Operate and Grow
 
-| Skill | Description |
-|-------|-------------|
-| **store-management** | Manage products, orders, chat, discounts via 30+ MCP tools |
-| **product-import** | Bulk import products from Shopify, Amazon, or Etsy — CSV, API, or JSON |
-| **competitor-analysis** | Research competitor products, reviews, and pricing to inform your strategy |
+- **store-management** — Manage products, orders, chat, discounts via 30+ MCP tools
+- **product-import** — Bulk import products from Shopify, Amazon, or Etsy (CSV, API, or JSON)
+- **competitor-analysis** — Research competitor products, reviews, and pricing
 
 ### Content and Marketing
 
-| Skill | Description |
-|-------|-------------|
-| **product-description** | Generate SEO-optimized, conversion-focused product descriptions |
-| **store-copywriting** | Write compelling store profile, About section, and campaign copy |
-| **storefront-cro** | Audit your storefront and get prioritized conversion optimization tips |
-| **product-image-prompt** | Craft AI image generation prompts for product photos and store branding |
+- **product-description** — Generate SEO-optimized, conversion-focused product descriptions
+- **store-copywriting** — Write compelling store profile, About section, and campaign copy
+- **storefront-cro** — Audit your storefront and get prioritized conversion optimization tips
+- **product-image-prompt** — Craft AI image prompts for product photos and store branding
 
 ## Store Modes
-
-Skills cover three deployment modes:
 
 | Mode | Best For | Getting Started |
 |------|----------|----------------|
@@ -51,7 +59,16 @@ Skills cover three deployment modes:
 
 ## MCP Integration
 
-This plugin includes an MCP server configuration for `mobazha-mcp` — a Model Context Protocol server that gives your AI agent direct access to your store's API.
+Connect your AI agent directly to your store's API via the [Model Context Protocol](https://modelcontextprotocol.io/).
+
+```mermaid
+graph LR
+    Agent["AI Agent"] -->|"MCP (SSE)"| Gateway["Mobazha Gateway"]
+    Gateway --> Products["Products"]
+    Gateway --> Orders["Orders"]
+    Gateway --> Chat["Chat"]
+    Gateway --> Settings["Settings"]
+```
 
 Once connected, your agent can:
 
@@ -65,23 +82,26 @@ See the **store-mcp-connect** skill for setup instructions.
 
 ## Installation
 
-### Claude Code (Official Marketplace)
+### Claude Code
 
 ```
 /plugin install mobazha@claude-plugins-official
-```
-
-### Claude Code (Mobazha Marketplace)
-
-```
-/plugin marketplace add mobazha/mobazha-skills
-/plugin install mobazha@mobazha
 ```
 
 ### Cursor
 
 ```
 /add-plugin mobazha
+```
+
+<details>
+<summary>More platforms (Codex, Copilot, Gemini, OpenCode, OpenClaw)</summary>
+
+### Claude Code (Mobazha Marketplace)
+
+```
+/plugin marketplace add mobazha/mobazha-skills
+/plugin install mobazha@mobazha
 ```
 
 ### OpenAI Codex CLI
@@ -118,9 +138,11 @@ gemini extensions install https://github.com/mobazha/mobazha-skills
 openclaw plugins install mobazha
 ```
 
-## How It Works
+</details>
 
-Once installed, your AI agent automatically discovers Mobazha skills. Ask it things like:
+## What You Can Ask
+
+Once installed, your AI agent automatically discovers Mobazha skills:
 
 - "Help me deploy a Mobazha store on my VPS"
 - "Walk me through the store setup wizard"
@@ -129,7 +151,6 @@ Once installed, your AI agent automatically discovers Mobazha skills. Ask it thi
 - "Check my recent orders and fulfill the pending ones"
 - "Set up a custom domain and Telegram bot for my store"
 - "Write a better description for my handmade leather wallets"
-- "Audit my store and tell me how to get more sales"
 - "Generate product photo prompts for my candle collection"
 - "Analyze the competition on Etsy for organic skincare"
 
@@ -145,10 +166,9 @@ See [TESTING.md](TESTING.md) for how to verify skills against a real store.
 
 [Mobazha](https://mobazha.org) is a decentralized commerce platform for independent sellers. Zero commissions, built-in escrow protection, crypto + fiat payments, and full data sovereignty.
 
-- **Website**: <https://mobazha.org>
-- **Self-Host Guide**: <https://mobazha.org/self-host>
-- **Telegram**: <https://t.me/MobazhaHQ>
-- **GitHub**: <https://github.com/mobazha>
+[![Website](https://img.shields.io/badge/Website-mobazha.org-teal)](https://mobazha.org)
+[![Telegram](https://img.shields.io/badge/Telegram-MobazhaHQ-blue)](https://t.me/MobazhaHQ)
+[![Self-Host](https://img.shields.io/badge/Self--Host-Guide-green)](https://mobazha.org/self-host)
 
 ## License
 
