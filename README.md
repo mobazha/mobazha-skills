@@ -5,6 +5,7 @@
   <p>
     <a href="https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml"><img src="https://github.com/mobazha/mobazha-skills/actions/workflows/check.yml/badge.svg" alt="Quality Check"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+    <a href="https://clawhub.ai/fengzie/mobazha"><img src="https://img.shields.io/badge/ClawHub-14_skills-blueviolet" alt="ClawHub"></a>
   </p>
 </div>
 
@@ -82,6 +83,14 @@ See the **store-mcp-connect** skill for setup instructions.
 
 ## Installation
 
+### OpenClaw
+
+```
+openclaw plugins install mobazha
+```
+
+Also available on [ClawHub](https://clawhub.ai/fengzie/mobazha) — search "mobazha" to browse all 14 skills.
+
 ### Claude Code
 
 ```
@@ -94,26 +103,25 @@ See the **store-mcp-connect** skill for setup instructions.
 /add-plugin mobazha
 ```
 
-<details>
-<summary>More platforms (Codex, Copilot, Gemini, OpenCode, OpenClaw)</summary>
-
-### Claude Code (Mobazha Marketplace)
-
-```
-/plugin marketplace add mobazha/mobazha-skills
-/plugin install mobazha@mobazha
-```
-
-### OpenAI Codex CLI
+### Codex CLI
 
 ```
 codex marketplace add mobazha/mobazha-skills
 ```
 
+<details>
+<summary>More platforms (Copilot, Gemini, OpenCode)</summary>
+
 ### GitHub Copilot CLI
 
 ```
 copilot plugin marketplace add mobazha/mobazha-skills
+```
+
+### Gemini CLI
+
+```
+gemini extensions install https://github.com/mobazha/mobazha-skills
 ```
 
 ### OpenCode
@@ -124,18 +132,6 @@ Add to your `opencode.json`:
 {
   "plugin": ["mobazha@git+https://github.com/mobazha/mobazha-skills.git"]
 }
-```
-
-### Gemini CLI
-
-```
-gemini extensions install https://github.com/mobazha/mobazha-skills
-```
-
-### OpenClaw
-
-```
-openclaw plugins install mobazha
 ```
 
 </details>
