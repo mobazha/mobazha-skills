@@ -1,9 +1,25 @@
 {
   "id": "mobazha",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI skills for Mobazha decentralized commerce: store deployment, product import, privacy tools",
   "author": "Mobazha",
   "homepage": "https://github.com/mobazha/mobazha-skills",
   "license": "MIT",
+  "skills": [
+    "./skills/using-mobazha",
+    "./skills/standalone-setup",
+    "./skills/native-install",
+    "./skills/store-onboarding",
+    "./skills/subdomain-bot-config",
+    "./skills/tor-browsing",
+    "./skills/store-mcp-connect",
+    "./skills/store-management",
+    "./skills/product-import",
+    "./skills/competitor-analysis",
+    "./skills/product-description",
+    "./skills/store-copywriting",
+    "./skills/storefront-cro",
+    "./skills/product-image-prompt"
+  ],
   "configSchema": {}
 }

@@ -9,7 +9,7 @@
     {
       "name": "mobazha",
       "description": "AI skills for Mobazha: store deployment, product import, privacy tools",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./",
       "author": {
         "name": "Mobazha",
