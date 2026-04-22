@@ -7,6 +7,13 @@ description: Entry point for Mobazha skills. Provides an overview of available s
 
 You have access to **Mobazha Skills** — a set of guided workflows for the [Mobazha](https://mobazha.org) decentralized commerce platform.
 
+## Security Boundaries
+
+- All skills referenced below are **bundled in this package** under the `skills/` directory. No external skill files are fetched at runtime.
+- Skills that involve **server access, credentials, or shell commands** (e.g., `standalone-setup`, `store-mcp-connect`) require **explicit user confirmation** before executing any action.
+- The agent must **never store, log, or transmit** credentials (passwords, API tokens, SSH keys) beyond the current session.
+- External URLs referenced in skills (e.g., `get.mobazha.org`, `app.mobazha.org`) are official Mobazha endpoints. The agent must not follow redirects to unrecognized domains.
+
 ## What is Mobazha?
 
 Mobazha is a decentralized e-commerce platform for independent sellers. Key features:
@@ -90,5 +97,6 @@ For a full comparison, see `skills/store-onboarding/references/access-modes.md`.
 
 - Mobazha uses **external wallets** for crypto payments (buyers and sellers connect their own wallets). There is no internal wallet requiring deposit or withdrawal.
 - The SaaS platform at `app.mobazha.org` is the hosted version. Self-hosted stores are fully independent.
-- All install scripts are served from `get.mobazha.org` (which redirects to static assets on `mobazha.org`).
+- All install scripts are served from `get.mobazha.org` (which redirects to static assets on `mobazha.org`). Users should review scripts before executing — see individual install skills for details.
 - After deploying a store, the seller must complete the Setup Wizard before the store is operational — see `store-onboarding`.
+- Skills that connect to external services (MCP, store APIs) require user-provided credentials. The agent must ask for explicit consent before initiating any connection.

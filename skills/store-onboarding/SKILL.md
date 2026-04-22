@@ -1,11 +1,17 @@
 ---
 name: store-onboarding
 description: Complete the first-time setup wizard for a new Mobazha store. Use after deployment to configure admin password, store name, currencies, and profile.
+requires_credentials: true
+credential_types:
+  - Admin password (set during initial setup, user-provided)
+  - Bearer token (obtained after password setup for API access)
 ---
 
 # Store Onboarding
 
 Complete the first-time setup of your Mobazha store after deployment. This skill covers the Setup Wizard and onboarding flow for all store modes.
+
+> **This skill handles sensitive credentials.** The agent must ask for explicit user consent before setting passwords or making API calls to the store. Passwords and tokens must never be stored, logged, or displayed beyond the immediate setup step.
 
 ## Choose Your Mode
 

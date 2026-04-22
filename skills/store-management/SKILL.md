@@ -1,6 +1,9 @@
 ---
 name: store-management
 description: Manage a Mobazha store using MCP tools — products, orders, messages, and settings. Requires an active MCP connection (see store-mcp-connect).
+requires_credentials: true
+credential_types:
+  - MCP session token (established via store-mcp-connect)
 ---
 
 # Store Management via AI
@@ -341,7 +344,9 @@ Note: Search tools are only available when the MCP server was started with `--se
 ## Best Practices for AI Agents
 
 1. **Always confirm before destructive actions** — deleting products, declining orders, issuing refunds
-2. **Summarize before acting** — show the seller what you found before making changes
-3. **Batch intelligently** — process multiple orders or products in sequence, reporting progress
-4. **Use templates** — call `listings_get_template` before creating products to ensure valid JSON
-5. **Respect rate limits** — space out rapid consecutive calls
+2. **Ask for explicit user consent** before initiating any MCP connection or executing store operations
+3. **Summarize before acting** — show the seller what you found before making changes
+4. **Batch intelligently** — process multiple orders or products in sequence, reporting progress
+5. **Use templates** — call `listings_get_template` before creating products to ensure valid JSON
+6. **Respect rate limits** — space out rapid consecutive calls
+7. **Never log or display tokens** — MCP credentials must not appear in agent output or logs

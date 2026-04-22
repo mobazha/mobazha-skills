@@ -1,6 +1,9 @@
 ---
 name: standalone-setup
 description: Deploy a self-hosted Mobazha store on any Linux VPS using Docker. Use when the user wants to set up a standalone store on a server.
+requires_credentials: true
+credential_types:
+  - SSH credentials (IP address and password/key for VPS access, user-provided)
 ---
 
 # Standalone Store Setup
@@ -43,6 +46,8 @@ ssh -i <KEY_PATH> root@<IP_ADDRESS>
 ### Step 2: Install the Standalone Store
 
 For a full list of installer flags and post-install file locations, see `references/install-flags.md`.
+
+> **Security note**: The commands below download and execute a shell script from `get.mobazha.org`. Before running, you can review the script by opening the URL in a browser or running `curl -sSL https://get.mobazha.org/standalone | less`. Only proceed if the user confirms they trust the source.
 
 **Zero-config (most common)**:
 
@@ -182,9 +187,10 @@ cd /opt/mobazha && docker compose logs -f
 
 If the user provides a VPS IP and root password:
 
-1. Use SSH to connect to the VPS
-2. Run the installation command
-3. Report the store URL back to the user
-4. Remind the user to change the default SSH password for security
+1. **Ask for explicit confirmation** before connecting to the VPS via SSH
+2. Use SSH to connect to the VPS
+3. Run the installation command
+4. Report the store URL back to the user
+5. Remind the user to change the default SSH password for security
 
-**Never store or log credentials.** After the session, credentials are not retained.
+**Never store or log credentials.** After the session, credentials are not retained. The agent must not transmit credentials to any third party or persist them beyond the immediate command execution.

@@ -11,6 +11,8 @@ Install Mobazha as a single native binary — no Docker, no runtime dependencies
 
 ## Quick Install
 
+> **Security note**: The install commands below download and execute a shell script from `get.mobazha.org`. Before running, you can review the script with `curl -sSL https://get.mobazha.org/install | less`. Only proceed if the user confirms they trust the source.
+
 ### Linux & macOS
 
 ```bash

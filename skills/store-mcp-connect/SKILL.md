@@ -1,11 +1,17 @@
 ---
 name: store-mcp-connect
 description: Connect an AI agent to a Mobazha store via MCP (Model Context Protocol). Use when the user wants their agent to directly manage store products, orders, and settings.
+requires_credentials: true
+credential_types:
+  - API token (Bearer token generated from the store's admin panel)
+  - SSH credentials (optional, only for tunneled connections to remote VPS stores)
 ---
 
 # Connect AI Agent to Your Store (MCP)
 
 Connect your AI coding agent to your Mobazha store via MCP (Model Context Protocol). Once connected, your agent can directly manage products, orders, messages, and more.
+
+> **This skill requires credentials.** The agent needs an API token from your store to connect. The agent must ask for your explicit consent before initiating any connection to your store. Tokens should be stored in environment variables, never committed to source control.
 
 ## What You Get
 
@@ -227,6 +233,8 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --to
 
 ### Credential Safety
 
-- Store the token in environment variables, not in config files committed to git
+- **Never hardcode tokens** in source code or config files committed to git
+- Store the token in environment variables or a secrets manager
 - Add MCP config files to `.gitignore` if they contain tokens
-- Tokens can be revoked and regenerated at any time
+- Tokens can be revoked and regenerated at any time from the store admin panel
+- The agent must **never log, display, or transmit** tokens to any party other than the target store endpoint

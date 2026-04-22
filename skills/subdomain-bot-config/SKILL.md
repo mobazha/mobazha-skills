@@ -120,8 +120,8 @@ Share this link anywhere — buyers tap the menu button to open your Mini App st
 
 ## Credential Handling
 
-If the user shares a BotFather token:
-
-- Use it only for the immediate configuration task
-- Never store, log, or display it after use
-- Remind the user to keep the token private
+- **Ask for explicit user consent** before connecting to any server or entering credentials
+- If the user shares a BotFather token, use it only for the immediate configuration task
+- Never store, log, or display credentials after use
+- Remind the user to keep tokens and passwords private
+- The agent must not transmit credentials to any party other than the intended target
