@@ -29,7 +29,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **store-onboarding**: first-time `/admin` setup wizard walkthrough
-- **store-mcp-connect**: connect AI agents to stores via MCP (stdio + SSE)
+- **store-mcp-connect**: connect AI agents to stores via MCP (Streamable HTTP + stdio)
 - **store-management**: 30+ MCP tool usage guide organized by seller workflows
 - MCP server declarations in Claude and Cursor plugin manifests
 

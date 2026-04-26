@@ -11,8 +11,8 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 | **Admin URL** | `app.mobazha.org` (dashboard after login) | `https://shop.example.com/admin` or `http://<IP>/admin` | Docker: `http://localhost/admin`; Native: `http://localhost:5102/admin` |
 | **Login method** | OAuth (Google, GitHub, or email) | Admin password (set during onboarding) | Admin password (set during onboarding) |
 | **Onboarding** | UI wizard after first login | Setup Wizard at `/admin` (4 steps, API-automatable) | Same as VPS |
-| **MCP connection** | SSE at `https://app.mobazha.org/platform/v1/mcp/sse` | SSE at `https://shop.example.com/platform/v1/mcp/sse` (or SSH tunnel) | SSE at `http://localhost:5102/platform/v1/mcp/sse` |
-| **MCP auth** | API Token (from Admin > Settings > API) | Bearer Token (from `/platform/v1/auth/tokens`) | Bearer Token (same as VPS) |
+| **MCP connection** | Streamable HTTP at `https://app.mobazha.org/v1/mcp` | Streamable HTTP at `https://shop.example.com/v1/mcp` (or SSH tunnel) | Streamable HTTP at `http://localhost:5102/v1/mcp` |
+| **MCP auth** | API Token (from Admin > AI Agents) | API Token (from Admin > AI Agents or `/v1/auth/tokens`) | API Token (same as VPS) |
 | **Public access** | Always public via `app.mobazha.org` | Public via domain or IP | LAN only (unless Tor overlay or P2P enabled) |
 | **Setup skill** | N/A (sign up online) | `standalone-setup` | `native-install` |
 
@@ -21,15 +21,15 @@ Quick reference for the three ways to run a Mobazha store. Each mode has differe
 ### Authentication
 
 - **SaaS**: Sign in with Google, GitHub, or email. No local password.
-- **VPS / NAT**: Set an admin password on first visit to `/admin`. All API calls use Bearer Token obtained from `/platform/v1/auth/tokens`.
+- **VPS / NAT**: Set an admin password on first visit to `/admin`. All API calls use Bearer Token (Basic Auth or generated API token from `/v1/auth/tokens`).
 
 ### MCP Token
 
-- **SaaS**: Generate an API token from the admin dashboard (Settings > API).
-- **VPS / NAT**: Obtain a Bearer token via the auth endpoint:
+- **SaaS**: Generate an API token from the admin dashboard (AI Agents page) or via `/platform/v1/auth/tokens`.
+- **VPS / NAT**: Generate an API token from the admin dashboard (AI Agents page) or via:
 
   ```
-  POST /platform/v1/auth/tokens
+  POST /v1/auth/tokens
   ```
 
 ### Network Access

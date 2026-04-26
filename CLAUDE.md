@@ -13,13 +13,13 @@ This repository contains AI agent skills for the Mobazha decentralized commerce 
 
 3. **Authentication conventions:**
    - SaaS mode: "Sign in with Google, GitHub, or email"
-   - Standalone / Local mode: "admin password" → obtain a Bearer Token via `POST /platform/v1/auth/tokens`
+   - Standalone / Local mode: "admin password" → obtain a Bearer Token via `POST /v1/auth/tokens`
    - All API calls use `Authorization: Bearer <token>` — never Basic Auth in user-facing docs
 
 4. **API path conventions:**
    - All paths use the `/v1/` prefix (e.g., `/v1/listings`, `/v1/profiles`)
-   - MCP auth tokens from `/platform/v1/auth/tokens`
-   - MCP SSE endpoint at `/platform/v1/mcp`
+   - MCP auth tokens: SaaS from `/platform/v1/auth/tokens`, Standalone from `/v1/auth/tokens`
+   - MCP endpoint at `/v1/mcp` (Streamable HTTP)
    - Media uploads via `POST /v1/media` (JSON body with base64)
 
 5. **Cover all three store modes** when the skill involves access URLs, authentication, or MCP:

@@ -53,10 +53,11 @@ This lets you test standalone-mode skills, onboarding, and MCP connections.
 ### store-mcp-connect
 
 - [ ] Build or install `mobazha-mcp`
-- [ ] Obtain a Bearer token via `POST /platform/v1/auth/tokens`
-- [ ] **Local SSE**: SSE at `http://localhost:5102/platform/v1/mcp/sse` connects successfully
+- [ ] **SaaS**: Obtain a token via `POST /platform/v1/auth/tokens` (or Admin > AI Agents)
+- [ ] **Standalone**: Obtain a token via `POST /v1/auth/tokens` (or Admin > AI Agents)
+- [ ] **Local MCP**: Streamable HTTP at `http://localhost:5102/v1/mcp` connects successfully
 - [ ] **SSH tunnel**: Tunnel to a remote VPS, then connect via stdio
-- [ ] **SSE**: Connect to `https://<domain>/platform/v1/mcp` with Bearer header
+- [ ] **Remote MCP**: Connect to `https://<domain>/v1/mcp` with Bearer header
 - [ ] Agent can call `listings_list_mine` and get a response
 
 ### store-management

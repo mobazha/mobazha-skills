@@ -22,10 +22,10 @@ Never include in any skill:
 ## Required Conventions
 
 - **SaaS auth**: "Sign in with Google, GitHub, or email" (never name the identity provider)
-- **Standalone auth**: "admin password" -> Bearer Token via `POST /platform/v1/auth/tokens`
+- **Standalone auth**: "admin password" -> Bearer Token via `POST /v1/auth/tokens`
 - **API calls**: Always use `Authorization: Bearer <token>`, never Basic Auth
 - **API paths**: Always `/v1/` prefix (e.g., `/v1/listings`, `/v1/profiles`, `/v1/media`)
-- **MCP SSE**: endpoint at `/platform/v1/mcp`
+- **MCP endpoint**: `/v1/mcp` (Streamable HTTP)
 - **Placeholders**: Use `<description>` format, explain each in surrounding text
 
 ## Three Store Modes

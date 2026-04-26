@@ -2,34 +2,26 @@
 """
 MCP Tool Verification — Layer 3 E2E Script
 
-Connects to the Mobazha MCP SSE endpoint and validates:
-1. SSE connection + session establishment
+Connects to the Mobazha MCP Streamable HTTP endpoint and validates:
+1. Streamable HTTP connection + session establishment
 2. JSON-RPC tool discovery (tools/list)
 3. Read-only tool calls with JSON structure assertions
 4. Multi-user tenant isolation
 
-The SSE MCP protocol works asynchronously:
-  - Client opens SSE stream → receives endpoint URL
-  - Client POSTs JSON-RPC messages → server returns 202
-  - Server sends response back through SSE stream
+The Streamable HTTP MCP protocol works synchronously:
+  - Client POSTs JSON-RPC "initialize" → server returns result + session header
+  - Client POSTs subsequent messages with Mcp-Session-Id header → server returns results
+  - Client can also GET with Mcp-Session-Id for SSE streaming (optional)
 
-Requires: pip install requests sseclient-py
+Requires: pip install requests
 """
 
 import json
 import os
-import queue
 import sys
-import threading
 import uuid
 
 import requests
-
-try:
-    import sseclient
-except ImportError:
-    print("ERROR: sseclient-py not installed. Run: pip install sseclient-py")
-    sys.exit(1)
 
 GATEWAY_URL = os.environ.get("GATEWAY_URL", "http://localhost:18080")
 CASDOOR_URL = os.environ.get("CASDOOR_URL", "http://localhost:18000")
@@ -82,60 +74,16 @@ def acquire_token(username):
 
 
 class MCPSession:
-    """Manages a full MCP SSE session with async response reading."""
+    """Manages a Streamable HTTP MCP session."""
 
     def __init__(self, token):
         self.token = token
         self.headers = {"Authorization": f"Bearer {token}"}
-        self.message_url = None
-        self.response_queue = queue.Queue()
-        self._sse_resp = None
-        self._reader_thread = None
-        self._endpoint_ready = threading.Event()
-
-    def connect(self, timeout=10):
-        """Establish SSE connection and start reading events."""
-        sse_url = f"{GATEWAY_URL}/platform/v1/mcp/sse"
-        self._sse_resp = requests.get(
-            sse_url, headers=self.headers, stream=True, timeout=timeout
-        )
-        self._sse_resp.raise_for_status()
-
-        self._reader_thread = threading.Thread(
-            target=self._read_events, daemon=True
-        )
-        self._reader_thread.start()
-
-        if not self._endpoint_ready.wait(timeout=timeout):
-            raise RuntimeError("Timeout waiting for endpoint event")
-
-        return self.message_url
-
-    def _read_events(self):
-        """Background thread reading SSE events."""
-        try:
-            client = sseclient.SSEClient(self._sse_resp)
-            for event in client.events():
-                if event.event == "endpoint":
-                    url = event.data
-                    if url.startswith("/"):
-                        url = GATEWAY_URL + url
-                    self.message_url = url
-                    self._endpoint_ready.set()
-                elif event.event == "message":
-                    try:
-                        data = json.loads(event.data)
-                        self.response_queue.put(data)
-                    except json.JSONDecodeError:
-                        pass
-        except Exception:
-            self._endpoint_ready.set()
+        self.session_id = None
+        self.mcp_url = f"{GATEWAY_URL}/v1/mcp"
 
     def send(self, method, params=None, timeout=15):
-        """Send a JSON-RPC request and wait for the response via SSE."""
-        if not self.message_url:
-            raise RuntimeError("Not connected")
-
+        """Send a JSON-RPC request via POST and return the response."""
         request_id = str(uuid.uuid4())[:8]
         payload = {
             "jsonrpc": "2.0",
@@ -143,9 +91,18 @@ class MCPSession:
             "method": method,
             "params": params or {},
         }
+
+        req_headers = {
+            **self.headers,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        if self.session_id:
+            req_headers["Mcp-Session-Id"] = self.session_id
+
         resp = requests.post(
-            self.message_url,
-            headers={**self.headers, "Content-Type": "application/json"},
+            self.mcp_url,
+            headers=req_headers,
             json=payload,
             timeout=timeout,
         )
@@ -154,11 +111,43 @@ class MCPSession:
                 f"POST returned {resp.status_code}: {resp.text[:200]}"
             )
 
+        session_header = resp.headers.get("Mcp-Session-Id")
+        if session_header:
+            self.session_id = session_header
+
+        if resp.status_code == 202:
+            return {}
+
+        data = resp.json()
+        if "error" in data:
+            raise RuntimeError(f"JSON-RPC error: {data['error']}")
+        return data.get("result", data)
+
+    def send_notification(self, method, params=None):
+        """Send a JSON-RPC notification (no id, no response expected)."""
+        payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+        }
+        if params:
+            payload["params"] = params
+
+        req_headers = {
+            **self.headers,
+            "Content-Type": "application/json",
+        }
+        if self.session_id:
+            req_headers["Mcp-Session-Id"] = self.session_id
+
         try:
-            result = self.response_queue.get(timeout=timeout)
-            return result.get("result", result)
-        except queue.Empty:
-            raise RuntimeError(f"Timeout waiting for response to {method}")
+            requests.post(
+                self.mcp_url,
+                headers=req_headers,
+                json=payload,
+                timeout=5,
+            )
+        except Exception:
+            pass
 
     def call_tool(self, tool_name, arguments=None, timeout=15):
         """Call an MCP tool and return the result."""
@@ -169,27 +158,39 @@ class MCPSession:
         )
 
     def close(self):
-        """Close the SSE connection."""
-        if self._sse_resp:
-            self._sse_resp.close()
+        """Close the session (send DELETE if session exists)."""
+        if self.session_id:
+            try:
+                req_headers = {
+                    **self.headers,
+                    "Mcp-Session-Id": self.session_id,
+                }
+                requests.delete(self.mcp_url, headers=req_headers, timeout=5)
+            except Exception:
+                pass
 
 
 # ========== Test Functions ==========
 
 
-def test_sse_connection(token):
-    """Test 1: SSE connection and session establishment."""
+def test_streamable_http_connection(token):
+    """Test 1: Streamable HTTP connection and session establishment."""
     try:
         session = MCPSession(token)
-        url = session.connect(timeout=10)
+        result = session.send("initialize", {
+            "protocolVersion": "2025-03-26",
+            "capabilities": {},
+            "clientInfo": {"name": "verify-mcp-tools", "version": "0.2.0"},
+        })
         session.close()
-        if url and "sessionId" in url:
-            log_pass("SSE connection + session ID")
+        if result and ("serverInfo" in result or "protocolVersion" in result):
+            sid = session.session_id or "(none)"
+            log_pass(f"Streamable HTTP connection (session: {sid[:16]}...)")
             return True
-        log_fail("SSE connection", f"unexpected endpoint: {url}")
+        log_fail("Streamable HTTP connection", f"unexpected result: {result}")
         return False
     except Exception as e:
-        log_fail("SSE connection", str(e))
+        log_fail("Streamable HTTP connection", str(e))
         return False
 
 
@@ -201,7 +202,7 @@ def test_session_flow(session):
         result = session.send("initialize", {
             "protocolVersion": "2025-03-26",
             "capabilities": {},
-            "clientInfo": {"name": "verify-mcp-tools", "version": "0.1.0"},
+            "clientInfo": {"name": "verify-mcp-tools", "version": "0.2.0"},
         })
         if result and ("serverInfo" in result or "protocolVersion" in result):
             log_pass("Initialize")
@@ -211,16 +212,8 @@ def test_session_flow(session):
         log_fail("Initialize", str(e))
         return False
 
-    # Send initialized notification (no response expected)
-    try:
-        requests.post(
-            session.message_url,
-            headers={**session.headers, "Content-Type": "application/json"},
-            json={"jsonrpc": "2.0", "method": "notifications/initialized"},
-            timeout=5,
-        )
-    except Exception:
-        pass
+    # Send initialized notification
+    session.send_notification("notifications/initialized")
 
     # 3. Tool Discovery
     try:
@@ -294,32 +287,20 @@ def test_multi_user_isolation(token1, token2):
     s2 = None
     try:
         s1 = MCPSession(token1)
-        s1.connect()
         s1.send("initialize", {
             "protocolVersion": "2025-03-26",
             "capabilities": {},
-            "clientInfo": {"name": "verify-iso-1", "version": "0.1.0"},
+            "clientInfo": {"name": "verify-iso-1", "version": "0.2.0"},
         })
-        requests.post(
-            s1.message_url,
-            headers={**s1.headers, "Content-Type": "application/json"},
-            json={"jsonrpc": "2.0", "method": "notifications/initialized"},
-            timeout=5,
-        )
+        s1.send_notification("notifications/initialized")
 
         s2 = MCPSession(token2)
-        s2.connect()
         s2.send("initialize", {
             "protocolVersion": "2025-03-26",
             "capabilities": {},
-            "clientInfo": {"name": "verify-iso-2", "version": "0.1.0"},
+            "clientInfo": {"name": "verify-iso-2", "version": "0.2.0"},
         })
-        requests.post(
-            s2.message_url,
-            headers={**s2.headers, "Content-Type": "application/json"},
-            json={"jsonrpc": "2.0", "method": "notifications/initialized"},
-            timeout=5,
-        )
+        s2.send_notification("notifications/initialized")
 
         p1 = s1.call_tool("profile_get")
         p2 = s2.call_tool("profile_get")
@@ -357,8 +338,9 @@ def test_multi_user_isolation(token1, token2):
 
 def main():
     print("=" * 60)
-    print("MCP Tool Verification")
+    print("MCP Tool Verification (Streamable HTTP)")
     print(f"Gateway: {GATEWAY_URL}")
+    print(f"MCP URL: {GATEWAY_URL}/v1/mcp")
     print("=" * 60)
 
     print("\n--- Acquiring tokens ---")
@@ -376,13 +358,12 @@ def main():
         print(f"FATAL: Cannot acquire token for testuser2: {e}")
         sys.exit(1)
 
-    print("\n--- 1. SSE Connection ---")
-    test_sse_connection(token1)
+    print("\n--- 1. Streamable HTTP Connection ---")
+    test_streamable_http_connection(token1)
 
     print("\n--- 2-4. MCP Session Flow ---")
     session = MCPSession(token1)
     try:
-        session.connect()
         test_session_flow(session)
     except Exception as e:
         log_fail("MCP Session", str(e))

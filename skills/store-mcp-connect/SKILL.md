@@ -29,61 +29,73 @@ After connecting, your AI agent has access to 30+ store management tools:
 | **Search** | `search_listings`, `search_profiles` | Marketplace discovery |
 | **Finance** | `exchange_rates_get`, `wallet_get_receiving_accounts`, `fiat_get_providers` | Payments and rates |
 
-## Connection Method: SSE (Recommended)
+## Connection Method: Streamable HTTP (Recommended)
 
-All Mobazha deployments include a built-in MCP SSE endpoint. This is the recommended method because:
+All Mobazha deployments include a built-in MCP endpoint using Streamable HTTP. This is the recommended method because:
 
 - No additional binary to install or maintain
 - Tools are always up-to-date with your store version
 - Works with Claude Code, Cursor, Codex, and all modern AI agents
+- Single endpoint URL — no sub-paths needed
 
-### SSE Endpoint
+### MCP Endpoint
 
-| Deployment | SSE URL |
+| Deployment | MCP URL |
 |------------|---------|
-| **SaaS** | `https://app.mobazha.org/platform/v1/mcp/sse` |
-| **Standalone (custom domain)** | `https://shop.example.com/platform/v1/mcp/sse` |
-| **Standalone (local Docker)** | `http://localhost/platform/v1/mcp/sse` |
-| **Native install (local)** | `http://localhost:5102/platform/v1/mcp/sse` |
-| **Native install (VPS)** | `http://<vps-ip>:5102/platform/v1/mcp/sse` |
+| **SaaS** | `https://app.mobazha.org/v1/mcp` |
+| **Standalone (custom domain)** | `https://shop.example.com/v1/mcp` |
+| **Standalone (local Docker)** | `http://localhost/v1/mcp` |
+| **Native install (local)** | `http://localhost:5102/v1/mcp` |
+| **Native install (VPS)** | `http://<vps-ip>:5102/v1/mcp` |
 
 ---
 
 ## Step 1: Get Your API Token
 
-### SaaS Store
+### Option A: Admin UI (Recommended)
 
-1. Log in to your store at `app.mobazha.org`
-2. Go to **Settings > API**
-3. Click **Generate Token**
-4. Copy the token
+1. Log in to your store admin panel
+   - **SaaS**: `app.mobazha.org` → sign in with Google/GitHub/email
+   - **Standalone**: `https://shop.example.com/admin` or `http://localhost:5102/admin`
+2. Go to **AI Agents** (top-level navigation)
+3. Click any AI client card → a token is auto-created and shown
+4. Or expand **Connection Keys (Advanced)** → **Create Token**
 
-### Standalone Store (Docker with domain)
+### Option B: curl (requires existing credentials)
 
-Open your store's admin panel in a browser and generate a token via **Settings > API**, or via curl:
-
-```bash
-curl -X POST https://shop.example.com/platform/v1/auth/tokens \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "<your-admin-password>"}'
-```
-
-### Native Install (local or VPS)
-
-The default gateway port for native installs is **5102**:
+**SaaS** — First obtain a JWT by signing in, then create an API token:
 
 ```bash
-curl -X POST http://localhost:5102/platform/v1/auth/tokens \
+curl -X POST https://app.mobazha.org/platform/v1/auth/tokens \
+  -H "Authorization: Bearer <your-jwt>" \
   -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "<your-admin-password>"}'
+  -d '{"name": "mcp-agent", "scopes": ["seller:*"]}'
 ```
 
-For a VPS, replace `localhost` with your server's IP or use an SSH tunnel:
+**Standalone / Native** — Use your admin password (Basic Auth) to create a token:
+
+```bash
+# Standalone Docker (custom domain)
+curl -X POST https://shop.example.com/v1/auth/tokens \
+  -u "admin:<your-password>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "mcp-agent", "scopes": ["seller:*"]}'
+
+# Native install (local or VPS, port 5102)
+curl -X POST http://localhost:5102/v1/auth/tokens \
+  -u "admin:<your-password>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "mcp-agent", "scopes": ["seller:*"]}'
+```
+
+For a remote VPS, use an SSH tunnel if the port is not public:
 
 ```bash
 ssh -L 5102:localhost:5102 root@<vps-ip>
 # Then use http://localhost:5102 from your local machine
 ```
+
+> The `token` field in the response is shown **only once** — save it immediately.
 
 ---
 
@@ -97,8 +109,8 @@ Add to `~/.claude.json` (or project-level `.mcp.json`):
 {
   "mcpServers": {
     "mobazha-store": {
-      "type": "sse",
-      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "type": "streamable-http",
+      "url": "https://shop.example.com/v1/mcp",
       "headers": {
         "Authorization": "Bearer <your-token>"
       }
@@ -115,7 +127,8 @@ Add to `.cursor/mcp.json` in your project:
 {
   "mcpServers": {
     "mobazha-store": {
-      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "type": "streamable-http",
+      "url": "https://shop.example.com/v1/mcp",
       "headers": {
         "Authorization": "Bearer <your-token>"
       }
@@ -124,13 +137,13 @@ Add to `.cursor/mcp.json` in your project:
 }
 ```
 
-Or go to **Settings > MCP Servers > Add Server** and enter the SSE URL.
+Or go to **Settings > MCP Servers > Add Server** and enter the MCP URL.
 
 ### Codex CLI
 
 ```bash
-codex mcp add mobazha-store --transport sse \
-  --url "https://shop.example.com/platform/v1/mcp/sse" \
+codex mcp add mobazha-store --transport http \
+  --url "https://shop.example.com/v1/mcp" \
   --header "Authorization: Bearer <your-token>"
 ```
 
@@ -142,8 +155,8 @@ Add to `opencode.json`:
 {
   "mcp": {
     "mobazha-store": {
-      "type": "sse",
-      "url": "https://shop.example.com/platform/v1/mcp/sse",
+      "type": "streamable-http",
+      "url": "https://shop.example.com/v1/mcp",
       "headers": {
         "Authorization": "Bearer <your-token>"
       }
@@ -170,20 +183,23 @@ For a guide on what you can do with MCP tools, see the `store-management` skill.
 
 ## Advanced: stdio Transport
 
-For environments where SSE is not supported by the AI agent, or for air-gapped setups, a `mobazha-mcp` stdio binary is available. It ships with the standalone Docker image and native install.
+For environments where Streamable HTTP is not supported by the AI agent, or for air-gapped setups, a `mobazha-mcp` stdio binary is available. It ships with the standalone Docker image and native install.
 
 ### When to Use stdio
 
-- Your AI agent doesn't support SSE MCP transport
+- Your AI agent doesn't support Streamable HTTP MCP transport
 - Air-gapped or restricted network environment
 - Development/debugging of the MCP layer itself
 
 ### Using stdio from Standalone Docker
 
-The binary is bundled in the container:
+The binary is bundled in the container. For standalone nodes, you must set `--identity-path /v1/auth/identity`:
 
 ```bash
-docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --token <token>
+docker exec -it <container> mobazha-mcp \
+  --gateway-url http://localhost:5102 \
+  --identity-path /v1/auth/identity \
+  --token <token>
 ```
 
 ### stdio CLI Reference
@@ -191,8 +207,11 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --to
 | Flag | Env Variable | Default | Description |
 |------|-------------|---------|-------------|
 | `--gateway-url` | `MOBAZHA_GATEWAY_URL` | `http://localhost:5102` | Store gateway URL |
-| `--token` | `MOBAZHA_TOKEN` | (required) | Bearer token |
+| `--token` | `MOBAZHA_TOKEN` | (required) | API token (`mbz_` prefix) |
+| `--identity-path` | — | `/platform/v1/auth/identity` | Identity API path. Use `/v1/auth/identity` for standalone/native |
 | `--search-url` | `MOBAZHA_SEARCH_URL` | (optional) | Marketplace search API URL |
+
+> **Important**: The default `--identity-path` is for SaaS mode. Standalone and native installs must pass `--identity-path /v1/auth/identity`, otherwise authentication will fail with 404.
 
 ### stdio Agent Configuration
 
@@ -201,7 +220,10 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --to
   "mcpServers": {
     "mobazha-store": {
       "command": "mobazha-mcp",
-      "args": ["--gateway-url", "http://localhost:5102"],
+      "args": [
+        "--gateway-url", "http://localhost:5102",
+        "--identity-path", "/v1/auth/identity"
+      ],
       "env": {
         "MOBAZHA_TOKEN": "<your-token>"
       }
@@ -217,7 +239,7 @@ docker exec -it <container> mobazha-mcp --gateway-url http://localhost:5102 --to
 ### "connection refused" or timeout
 
 - Native install: verify the store is running with `curl http://localhost:5102/healthz`
-- Standalone Docker: the SSE endpoint is at port 80/443 (not 5102), try `curl http://localhost/healthz`
+- Standalone Docker: the MCP endpoint is at port 80/443 (not 5102), try `curl http://localhost/healthz`
 - For remote stores, check that the domain resolves and HTTPS is configured
 
 ### "401 Unauthorized"

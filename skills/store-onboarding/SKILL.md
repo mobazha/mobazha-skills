@@ -110,7 +110,7 @@ Generate a strong password: at least 12 characters, mixed case, numbers, and sym
 After setting the password, obtain a Bearer token for subsequent API calls:
 
 ```
-POST /platform/v1/auth/tokens
+POST /v1/auth/tokens
 Content-Type: application/json
 
 {
@@ -234,7 +234,7 @@ The Setup Wizard is identical to VPS Standalone mode (Steps 1-4 above). The only
 
 - **No domain needed** — You access via `localhost` or LAN IP
 - **No HTTPS** — Local connections use HTTP (this is fine for LAN)
-- **MCP connects directly** — No SSH tunnel needed; use SSE at `http://localhost:5102/platform/v1/mcp/sse`
+- **MCP connects directly** — No SSH tunnel needed; use Streamable HTTP at `http://localhost:5102/v1/mcp`
 
 ### Limitations
 

@@ -245,9 +245,9 @@ For direct API calls, authenticate via OAuth to obtain a Bearer token, then incl
 
 ## Credential Handling
 
-- Never store, log, or display API keys or passwords after use
+- Never store, log, or display API tokens or passwords after use
 - For Shopify/Etsy API access, the user should provide their own API keys
-- MCP tokens are session-scoped and managed by the platform
+- API tokens can be scoped, revoked, and have optional expiry — generate them from Admin > AI Agents or via the auth tokens API
 
 ## Limitations
 

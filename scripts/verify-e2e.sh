@@ -168,22 +168,24 @@ echo "--- System Setup ---"
 check_any "System setup endpoint" "GET" "/v1/system/setup" "200" "503"
 echo ""
 
-# Step 10: MCP SSE endpoint (store-mcp-connect skill)
-# SSE endpoints are long-lived streams; only check the initial HTTP status.
-echo "--- MCP SSE ---"
-MCP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 \
+# Step 10: MCP Streamable HTTP endpoint (store-mcp-connect skill)
+# Send an initialize JSON-RPC request and check the HTTP status.
+echo "--- MCP Streamable HTTP ---"
+MCP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 \
   -H "Authorization: Bearer $TOKEN" \
-  "${GATEWAY_URL}/platform/v1/mcp/sse" 2>/dev/null || echo "000")
-# Truncate to first 3 chars (SSE streams may append extra data to status)
+  -H "Content-Type: application/json" \
+  -X POST "${GATEWAY_URL}/v1/mcp" \
+  -d '{"jsonrpc":"2.0","method":"initialize","id":"e2e","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"verify-e2e","version":"0.1"}}}' \
+  2>/dev/null || echo "000")
 MCP_STATUS="${MCP_STATUS:0:3}"
 if [[ "$MCP_STATUS" == "200" || "$MCP_STATUS" == "401" ]]; then
-  echo -e "${GREEN}PASS${NC}: MCP SSE endpoint responds ($MCP_STATUS)"
+  echo -e "${GREEN}PASS${NC}: MCP Streamable HTTP endpoint responds ($MCP_STATUS)"
   passed=$((passed + 1))
 elif [[ "$MCP_STATUS" == "000" ]]; then
-  echo -e "${YELLOW}SKIP${NC}: MCP SSE endpoint not reachable"
+  echo -e "${YELLOW}SKIP${NC}: MCP endpoint not reachable"
   skipped=$((skipped + 1))
 else
-  echo -e "${YELLOW}WARN${NC}: MCP SSE endpoint returned $MCP_STATUS"
+  echo -e "${YELLOW}WARN${NC}: MCP endpoint returned $MCP_STATUS"
   skipped=$((skipped + 1))
 fi
 echo ""
