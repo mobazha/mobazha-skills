@@ -56,7 +56,32 @@ Parameters:
   listing_json: '{"slug":"existing-slug", "title":"Updated Title", ...}'   (required)
 ```
 
-Include the `slug` to identify which listing to update.
+Include the `slug` in the JSON to identify which listing to update. The MCP tool sends a `PUT /v1/listings` request (collection endpoint, not `/v1/listings/{slug}`).
+
+**Adding size/color variants**: Use `options` and `skus` fields:
+
+```json
+{
+  "slug": "my-tee",
+  "item": {
+    "options": [
+      {
+        "name": "Size",
+        "description": "Select your size",
+        "variants": [{"name": "S"}, {"name": "M"}, {"name": "L"}, {"name": "XL"}]
+      }
+    ],
+    "skus": [
+      {"selections": [{"option": "Size", "variant": "S"}], "productID": "tee-s", "quantity": "999"},
+      {"selections": [{"option": "Size", "variant": "M"}], "productID": "tee-m", "quantity": "999"},
+      {"selections": [{"option": "Size", "variant": "L"}], "productID": "tee-l", "quantity": "999"},
+      {"selections": [{"option": "Size", "variant": "XL"}], "productID": "tee-xl", "quantity": "999"}
+    ]
+  }
+}
+```
+
+Each SKU's `selections` array must reference option names and variant names defined in `options`. SKUs without `selections` are rejected when `options` are present.
 
 ### Delete a Product
 
@@ -66,16 +91,33 @@ Parameters:
   slug: "my-product-slug"   (required)
 ```
 
+### Upload Product Images
+
+Upload images before creating a listing. The endpoint returns content hashes to reference in the listing.
+
+```
+POST /v1/media/product-images
+Content-Type: application/json
+Authorization: Bearer <token>
+
+[
+  { "image": "<base64-encoded-image>", "filename": "product-photo.jpg" }
+]
+```
+
+Response includes image hashes for use in `listing_json.item.images`.
+
 ### Typical "Add Product" Workflow
 
 When a seller says "add a product," follow this sequence:
 
 1. Ask for: product name, description, price, currency, stock quantity
 2. Ask for product images (or accept URLs to download)
-3. Call `listings_get_template` to get the full schema
-4. Fill in the template with provided values
-5. Call `listings_create` with the JSON
-6. Confirm success and share the listing URL
+3. Upload images via `POST /v1/media/product-images` to obtain content hashes
+4. Call `listings_get_template` to get the full schema
+5. Fill in the template with provided values (including image hashes)
+6. Call `listings_create` with the JSON
+7. Confirm success and share the listing URL
 
 ## Order Management
 
@@ -218,17 +260,22 @@ Parameters: (none)
 ```
 Tool: collections_create
 Parameters:
-  collection_json: '{"name":"Best Sellers", "description":"Our top products"}'   (required)
+  collection_json: '{"title":"Best Sellers","description":"Our top products"}'   (required)
 ```
+
+Note: `collection_json` is a single JSON string containing the collection object.
+The backend `models.Collection` accepts fields: `title` (required), `description`, `image`, `type` ("manual"/"smart"), `sortOrder`, `published`.
 
 ### Add Products to Collection
 
 ```
 Tool: collections_add_products
 Parameters:
-  collection_id: "abc123"                              (required)
-  products_json: '["product-slug-1","product-slug-2"]'  (required)
+  collection_id: "abc123"                                              (required)
+  products_json: '{"slugs":["product-slug-1","product-slug-2"]}'       (required)
 ```
+
+Note: `products_json` must be a JSON string containing a `slugs` array, not a bare array.
 
 ## Store Profile
 

@@ -63,10 +63,23 @@ The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/im
       "isDefault": true,
       "locationGroups": [
         {
-          "name": "Worldwide",
-          "locations": [{ "country": "ALL" }],
-          "shippingOptions": [
-            { "name": "Standard", "type": "FIXED_PRICE", "price": "5.00" }
+          "id": "lg-worldwide",
+          "locationIds": [],
+          "zones": [
+            {
+              "id": "z-global",
+              "name": "Global",
+              "regions": ["ALL"],
+              "rates": [
+                {
+                  "id": "r-standard",
+                  "name": "Standard Shipping",
+                  "price": "599",
+                  "currency": "USD",
+                  "estimatedDelivery": "7-14 business days"
+                }
+              ]
+            }
           ]
         }
       ]
@@ -89,11 +102,30 @@ The tool builds a ZIP archive internally and uploads it to `POST /v1/listings/im
 }
 ```
 
+### Shipping Profile Structure
+
+The `locationGroups` array follows the Shopify-inspired model:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `locationGroups[].id` | string | Unique ID for the location group |
+| `locationGroups[].locationIds` | string[] | Linked shipping locations (empty = global) |
+| `locationGroups[].zones[].id` | string | Unique ID for the zone |
+| `locationGroups[].zones[].name` | string | Display name (e.g., "Global", "Asia") |
+| `locationGroups[].zones[].regions` | string[] | ISO country codes, or `["ALL"]` for worldwide |
+| `locationGroups[].zones[].rates[].id` | string | Unique ID for the rate |
+| `locationGroups[].zones[].rates[].name` | string | Rate name (e.g., "Standard Shipping") |
+| `locationGroups[].zones[].rates[].price` | string | Price in smallest currency unit (e.g., "599" = $5.99) |
+| `locationGroups[].zones[].rates[].currency` | string | Currency code (e.g., "USD") |
+| `locationGroups[].zones[].rates[].estimatedDelivery` | string | Delivery estimate (e.g., "7-14 business days") |
+
+Listings reference profiles by `shippingProfileId`, which matches the `key` field in the import JSON.
+
 ### Contract Types
 
 | Type | Notes |
 |------|-------|
-| `PHYSICAL_GOOD` | Requires `shippingProfileId` matching a profile key/name |
+| `PHYSICAL_GOOD` | Requires `shippingProfileId` matching a profile `key` |
 | `DIGITAL_GOOD` | No shipping needed |
 | `SERVICE` | No shipping needed |
 | `CRYPTOCURRENCY` | Token/coin listings (supports RWA fields) |
@@ -134,15 +166,16 @@ For non-MCP contexts (e.g., shell scripts), build a ZIP file manually:
 
 ```
 my-import/
-├── listings.json          # Required: product data + shipping profiles
-├── profile.json           # Optional: store profile data
-├── images/                # Product images referenced in listings.json
+├── import.json            # Required: product data + shipping profiles + collections
+├── images/                # Product images referenced in import.json
 │   ├── photo1.jpg
 │   ├── photo2.png
 │   └── ...
 └── videos/                # Optional: intro videos
     └── demo.mp4
 ```
+
+The JSON file can be named `import.json`, `listings.json`, or any `.json` filename. If it includes a `profile` section, the store profile is also updated.
 
 ### Upload
 
@@ -224,7 +257,7 @@ Content-Type: application/json
 Authorization: Bearer <token>
 ```
 
-Images must be uploaded first via `POST /v1/media` to obtain content hashes.
+Images must be uploaded first via `POST /v1/media/product-images` to obtain content hashes. The endpoint accepts a JSON array of `{"image": "<base64>", "filename": "photo.jpg"}` objects.
 
 ## Authentication
 

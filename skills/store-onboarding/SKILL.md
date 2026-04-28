@@ -164,12 +164,16 @@ Authorization: Bearer <token>
 To upload an avatar image first:
 
 ```
-POST /v1/media
+POST /v1/media/avatar
 Content-Type: application/json
 Authorization: Bearer <token>
 
-[{ "image": "<base64-image-data>", "filename": "avatar.jpg" }]
+{ "avatar": "<base64-image-data>" }
 ```
+
+Note: the avatar endpoint accepts a single object with an `avatar` field (base64 string), not an array. The header endpoint uses `{ "header": "<base64>" }`.
+
+Other media endpoints: `/v1/media/header` (store banner), `/v1/media/product-images` (product photos, accepts array format), `/v1/media/images` (general images).
 
 ### Step 3: Region and Currency
 
