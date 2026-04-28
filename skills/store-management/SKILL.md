@@ -153,15 +153,15 @@ Parameters:
 |--------|------|-------------|
 | Confirm | `orders_confirm` | Accept an incoming order |
 | Decline | `orders_decline` | Reject an order |
-| Fulfill | `orders_fulfill` | Mark as shipped, add tracking |
+| Ship | `orders_ship` | Mark as shipped, add tracking |
 | Complete | `orders_complete` | Release escrow funds |
 | Refund | `orders_refund` | Issue a refund |
 | Cancel | `orders_cancel` | Cancel as buyer |
 
-**Fulfill with tracking info:**
+**Ship with tracking info:**
 
 ```
-Tool: orders_fulfill
+Tool: orders_ship
 Parameters:
   order_id: "QmXyz..."            (required)
   shipper: "FedEx"                (optional)
@@ -176,7 +176,7 @@ When a seller says "check my orders":
 1. Call `orders_get_sales` to list recent orders
 2. Summarize: how many new/pending, total revenue
 3. For each pending order, ask if the seller wants to confirm or decline
-4. After confirming, ask if they have tracking info to fulfill
+4. After confirming, ask if they have tracking info to ship
 
 ## Buyer Communication
 

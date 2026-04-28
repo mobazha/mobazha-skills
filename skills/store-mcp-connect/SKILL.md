@@ -20,7 +20,7 @@ After connecting, your AI agent has access to 30+ store management tools:
 | Category | Tools | What They Do |
 |----------|-------|-------------|
 | **Products** | `listings_create`, `listings_update`, `listings_delete`, `listings_list_mine`, `listings_import_json` | Full product CRUD + bulk import |
-| **Orders** | `orders_get_sales`, `orders_confirm`, `orders_fulfill`, `orders_refund` | Order lifecycle |
+| **Orders** | `orders_get_sales`, `orders_confirm`, `orders_ship`, `orders_refund` | Order lifecycle |
 | **Chat** | `chat_get_conversations`, `chat_send_message` | Buyer communication |
 | **Discounts** | `discounts_create`, `discounts_update`, `discounts_delete` | Promotions |
 | **Collections** | `collections_create`, `collections_add_products` | Product organization |
