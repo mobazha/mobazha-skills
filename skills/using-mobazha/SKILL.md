@@ -56,6 +56,7 @@ The following companion skills are part of the Mobazha skills collection:
 | **store-management** | `skills/store-management/SKILL.md` | `mobazha-store-management` | Manage products, orders, messages, discounts via MCP tools |
 | **product-import** | `skills/product-import/SKILL.md` | `mobazha-product-import` | Import products from Shopify, Amazon, Etsy, or other platforms |
 | **competitor-analysis** | `skills/competitor-analysis/SKILL.md` | `mobazha-competitor-analysis` | Research competitor products, reviews, and pricing |
+| **supply-chain-sourcing** | `skills/supply-chain-sourcing/SKILL.md` | `mobazha-supply-chain-sourcing` | Connect POD/dropshipping suppliers, import products, set up monitoring rules |
 
 ### Content and Marketing
 
